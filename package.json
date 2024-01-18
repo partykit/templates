@@ -1,0 +1,29 @@
+{
+  "name": "@partykit/templates",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "check": "concurrently \"npm run repocheck\" \"npm run lint\" \"npm run typecheck\" --kill-others-on-fail",
+    "lint": "npx eslint \"**/*.[tj]s?(x)\" --max-warnings=0 --report-unused-disable-directives",
+    "repocheck": "manypkg check",
+    "typecheck": "npm exec tsc --workspaces"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "templates/*"
+  ],
+  "dependencies": {
+    "@manypkg/cli": "^0.21.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-deprecation": "^2.0.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  }
+}
