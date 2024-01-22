@@ -11,10 +11,9 @@ export default class ChatServer implements Party.Server {
   messages: Message[] = [];
   ai: Ai;
 
-  constructor(public party: Party.Party) {
-    this.party = party;
+  constructor(public room: Party.Room) {
     this.messages = [];
-    this.ai = new Ai(party.context.ai);
+    this.ai = new Ai(room.context.ai);
   }
 
   onConnect(connection: Party.Connection) {
@@ -27,14 +26,10 @@ export default class ChatServer implements Party.Server {
     const msg = JSON.parse(messageString);
     if (msg.type === "message") {
       this.messages.push(msg.message);
-      this.party.broadcast(
+      this.room.broadcast(
         JSON.stringify({ type: "update", message: msg.message }),
         [connection.id]
       );
-
-      // Commented out as not always reliable
-      //const shouldReply = await this.shouldReply();
-      //if (!shouldReply) return;
 
       // Optionally use OpenAI
       //await this.replyWithOpenAI();
@@ -50,22 +45,16 @@ export default class ChatServer implements Party.Server {
     this.messages.push(aiMsg);
 
     let text = "";
-    const tokens = await getChatCompletionResponse(
-      this.party.env,
+    const usage = await getChatCompletionResponse(
+      this.room.env,
       messages,
       (token) => {
         text += token;
         aiMsg.body = text;
-        this.party.broadcast(
-          JSON.stringify({ type: "update", message: aiMsg })
-        );
+        this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
       }
     );
-    // Report usage to the usage server
-    /*this.party.context.parties.usage.get(USAGE_SINGLETON_ROOM_ID).fetch({
-      method: "POST",
-      body: JSON.stringify({ usage: tokens }),
-    });*/
+    console.log("OpenAI usage", usage);
   }
 
   async replyWithLlama() {
@@ -100,39 +89,7 @@ export default class ChatServer implements Party.Server {
       const decoded = JSON.parse(part.data);
       response += decoded.response;
       aiMsg.body = response;
-      this.party.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
+      this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
     }
-  }
-
-  async shouldReply() {
-    // Use Mistral to determine whether the latest message is directed at the AI
-
-    const transcript = this.messages
-      .map((msg) => {
-        return `${msg.role}: ${msg.body}`;
-      })
-      .join("\n");
-
-    const prompt = `You are a helpful AI assistant. Here is a conversation transcript:
-
-${transcript}
-
-Is the latest message directed at you? Reply YES or NO. If you are unsure, reply NO.
-
-Use only one of the two words YES or NO.`;
-
-    try {
-      const result = await this.ai.run("@cf/mistral/mistral-7b-instruct-v0.1", {
-        prompt,
-      });
-      console.log("got result", JSON.stringify(result, null, 2));
-      if (result.response.trim() === "YES") {
-        return true;
-      }
-    } catch (err) {
-      console.log("error", err);
-    }
-
-    return false;
   }
 }

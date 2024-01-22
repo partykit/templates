@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { getEncoding, encodingForModel } from "js-tiktoken";
+import { getEncoding } from "js-tiktoken";
 
 export type OpenAIMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 
@@ -40,10 +40,15 @@ export async function getChatCompletionResponse(
 
   // Return the number of tokens used
   // This is the number of tokens used by the prompt, plus 4 for the role
-  let tokens = prompt.reduce((sum, msg) => {
-    return sum + tiktoken.encode(msg.content ?? "").length + 4;
+  let usage = prompt.reduce((sum, msg) => {
+    return (
+      sum +
+      tiktoken.encode(typeof msg.content === "string" ? msg.content : "")
+        .length +
+      4
+    );
   }, 0);
   // Add the tokens used by the response, plus 3 overhead
-  tokens += tiktoken.encode(response).length + 3;
-  return tokens;
+  usage += tiktoken.encode(response).length + 3;
+  return usage;
 }
