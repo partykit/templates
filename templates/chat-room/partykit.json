@@ -3,7 +3,9 @@
   "name": "chat-room-party",
   "main": "party/index.ts",
   "parties": {
+    "chatroom": "party/chatroom.ts",
     "counter": "party/counter.ts"
   },
-  "compatibilityDate": "2024-01-22"
+  "compatibilityDate": "2024-01-22",
+  "ai": true
 }
