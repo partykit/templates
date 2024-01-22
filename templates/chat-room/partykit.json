@@ -1,0 +1,9 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "chat-room-party",
+  "main": "party/index.ts",
+  "parties": {
+    "counter": "party/counter.ts"
+  },
+  "compatibilityDate": "2024-01-22"
+}
