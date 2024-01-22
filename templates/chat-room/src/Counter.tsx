@@ -8,7 +8,7 @@ export async function loadInitialCount(host: string) {
   const initialCount = await PartySocket.fetch(
     {
       host,
-      party: "counter",
+      party: "main",
       room: "index",
     },
     {

@@ -1,3 +1,11 @@
+/*
+counter.ts
+
+A minimal PartyKit server for use when bootstrapping a new app.
+
+Use the component `src/Counter.tsx` to show and increment a realtime multiplayer counter.
+*/
+
 import type * as Party from "partykit/server";
 
 export default class Server implements Party.Server {

@@ -7,7 +7,7 @@ import usePartySocket from "partysocket/react";
 
 export default function ChatRoom(props: { host: string; roomName: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const { user } = { user: { name: "Anonymous User " } as User };
+  const { user } = { user: { name: "Anonymous User" } as User };
 
   const handleUpdate = (prevMessages: Message[], message: Message) => {
     // If message.id is already in prevMessages, replace it
