@@ -23,6 +23,7 @@
   border: 1px solid rgb(214, 211, 209);
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
+  cursor: pointer;
 }
 
 .button:disabled {
