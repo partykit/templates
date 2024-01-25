@@ -23,9 +23,13 @@ export default class ChatServer implements Party.Server {
   }
 
   async onMessage(messageString: string, connection: Party.Connection) {
+    // Assume the message is JSON and parse it
     const msg = JSON.parse(messageString);
+    // We differentiate between messages by giving them a type
     if (msg.type === "message") {
+      // Update the server's state, which is the source of truth
       this.messages.push(msg.message);
+      // Send the new message to all clients
       this.room.broadcast(
         JSON.stringify({ type: "update", message: msg.message }),
         [connection.id]
