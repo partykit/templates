@@ -1,3 +1,4 @@
+import styles from "./ChatRoom.module.css";
 import { useState } from "react";
 //import { useUser } from "~/providers/user-context";
 import type { Message, User } from "../shared";
@@ -25,8 +26,8 @@ export default function ChatRoom(props: { host: string; roomName: string }) {
   };
 
   const socket = usePartySocket({
-    host: props.host,
-    //party: "main",
+    // host: props.host, -- defaults to window.location.host
+    //party: "main", -- defaults to "main"
     room: props.roomName,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
@@ -44,7 +45,7 @@ export default function ChatRoom(props: { host: string; roomName: string }) {
   };
 
   return (
-    <div className="w-full grow flex flex-col justify-between items-start">
+    <div className={styles.chatRoom}>
       <MessageList user={user} messages={messages} />
       <AddMessageForm addMessage={addMessage} user={user} />
     </div>

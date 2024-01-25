@@ -1,0 +1,16 @@
+.header {
+  flex-grow: 0;
+  background: white;
+}
+
+.header > nav {
+  margin: 0 auto;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(41, 37, 36);
+}

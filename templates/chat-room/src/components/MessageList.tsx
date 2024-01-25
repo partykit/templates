@@ -1,3 +1,4 @@
+import styles from "./MessageList.module.css";
 import { useEffect, useRef } from "react";
 import type { Message, User } from "../shared";
 
@@ -24,19 +25,17 @@ export default function MessageList(props: {
   }, []);
 
   return (
-    <div className="grow w-full basis-full relative overflow-y-scroll">
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="flex flex-col gap-3 w-full">
+    <div className={styles.outer}>
+      <div className={styles.inner}>
+        <div className={styles.list}>
           {messages.map((message, i) => {
-            const extraClasses =
-              message.user === user?.name ? "flex-row-reverse" : "";
             return (
               <div
                 key={i}
-                className={`flex justify-start items-end gap-2 ${extraClasses}`}
+                className={`${styles.listItem} ${message.user === user?.name ? styles.reversed : ""}`}
               >
-                <div className="font-semibold pb-1">{message.user}</div>
-                <div className="rounded-lg bg-stone-200 px-2 py-1">
+                <div className={styles.from}>{message.user}</div>
+                <div className={styles.message}>
                   {message.body.split("\n").map((line, i) => (
                     <div key={i}>{line}</div>
                   ))}
@@ -45,7 +44,7 @@ export default function MessageList(props: {
             );
           })}
         </div>
-        <div ref={messagesEndRef} className="h-2"></div>
+        <div ref={messagesEndRef} className={styles.bottom}></div>
       </div>
     </div>
   );

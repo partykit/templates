@@ -1,0 +1,49 @@
+.outer {
+  flex-grow: 1;
+  width: 100%;
+  flex-basis: 100%;
+  position: relative;
+  overflow-y: scroll;
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listItem {
+  display: flex;
+  justify-content: start;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.listItem.reversed {
+  justify-content: end;
+  flex-direction: row-reverse;
+}
+
+.from {
+  font-weight: 600;
+  padding-bottom: 0.25rem;
+}
+
+.message {
+  border-radius: 0.5rem;
+  background-color: rgb(231, 229, 228);
+  padding: 0.25rem 0.5rem;
+}
+
+.bottom {
+  height: 0.5rem;
+}
