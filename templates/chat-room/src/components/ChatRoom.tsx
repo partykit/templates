@@ -6,7 +6,7 @@ import AddMessageForm from "./AddMessageForm";
 import MessageList from "./MessageList";
 import usePartySocket from "partysocket/react";
 
-export default function ChatRoom(props: { host: string; roomName: string }) {
+export default function ChatRoom(props: { host?: string; roomName: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const { user } = { user: { name: "Anonymous User" } as User };
 
@@ -26,7 +26,7 @@ export default function ChatRoom(props: { host: string; roomName: string }) {
   };
 
   const socket = usePartySocket({
-    // host: props.host, -- defaults to window.location.host
+    host: props.host, // defaults to window.location.host if not set
     //party: "main", -- defaults to "main"
     room: props.roomName,
     onMessage(evt) {

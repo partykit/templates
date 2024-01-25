@@ -10,7 +10,7 @@ function App() {
       <Header />
       <main>
         <h1>AI Chat Room</h1>
-        <ChatRoom host="127.0.0.1:1999" roomName="default-room" />
+        <ChatRoom roomName="default-room" />
       </main>
       <Footer />
     </>

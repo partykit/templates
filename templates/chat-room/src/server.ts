@@ -1,7 +1,7 @@
 import type * as Party from "partykit/server";
 import { Ai } from "partykit-ai";
 import { type Message, createMessage } from "./shared";
-//import { getChatCompletionResponse, type OpenAIMessage } from "./utils/openai";
+import { getChatCompletionResponse, type OpenAIMessage } from "./openai";
 // @ts-ignore
 import { EventSourceParserStream } from "eventsource-parser/stream";
 
@@ -37,7 +37,7 @@ export default class ChatServer implements Party.Server {
     }
   }
 
-  /*  async replyWithOpenAI() {
+  async replyWithOpenAI() {
     const messages = this.messages.map((msg) => {
       return { role: msg.role, content: msg.body } as OpenAIMessage;
     });
@@ -45,17 +45,13 @@ export default class ChatServer implements Party.Server {
     this.messages.push(aiMsg);
 
     let text = "";
-    const usage = await getChatCompletionResponse(
-      this.room.env,
-      messages,
-      (token) => {
-        text += token;
-        aiMsg.body = text;
-        this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
-      }
-    );
+    const usage = await getChatCompletionResponse(messages, (token) => {
+      text += token;
+      aiMsg.body = text;
+      this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
+    });
     console.log("OpenAI usage", usage);
-  }*/
+  }
 
   async replyWithLlama() {
     // Setup

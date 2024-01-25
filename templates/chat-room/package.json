@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "eventsource-parser": "^1.1.1",
+    "js-tiktoken": "^1.0.8",
+    "openai": "^4.25.0",
     "partykit-ai": "^0.0.9",
     "partysocket": "^0.0.25",
     "react": "^18.2.0",
