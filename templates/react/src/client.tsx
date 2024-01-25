@@ -1,3 +1,4 @@
+import "./styles.css";
 import usePartySocket from "partysocket/react";
 import { createRoot } from "react-dom/client";
 
