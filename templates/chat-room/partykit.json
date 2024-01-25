@@ -1,0 +1,11 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "chat-room",
+  "main": "src/server.ts",
+  "compatibilityDate": "2024-01-25",
+  "serve": {
+    "path": "public",
+    "build": "src/client.tsx"
+  },
+  "ai": true
+}
