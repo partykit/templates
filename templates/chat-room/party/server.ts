@@ -58,14 +58,14 @@ export default class ChatServer implements Party.Server {
   }
 
   async replyWithLlama() {
-    // Setup
+    // 1. Setup
     const messages = this.messages.map((msg) => {
       return { role: msg.role, content: msg.body } as any; //as OpenAIMessage;
     });
     const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
     this.messages.push(aiMsg);
 
-    // Run the AI
+    // 2. Run the AI
     const prompt = [
       {
         role: "system",
@@ -82,7 +82,7 @@ export default class ChatServer implements Party.Server {
       .pipeThrough(new TextDecoderStream("utf-8"))
       .pipeThrough(new EventSourceParserStream());
 
-    // Process the streamed response
+    // 3. Process the streamed response
     let response = "";
     for await (const part of eventStream) {
       if (part.data === "[DONE]") break;

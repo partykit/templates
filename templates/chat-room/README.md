@@ -235,4 +235,112 @@ We could stop here. But let's add something different.
 
 ### Adding AI users
 
-TK
+Take another look at `ChatServer.onMessage`:
+
+```typescript
+async onMessage(messageString: string, connection: Party.Connection) {
+  // ...
+  if (msg.type === "message") {
+    // ...
+    await this.replyWithLlama(); // <- this line here
+  }
+}
+```
+
+`replyWithLlama` is a method we've added to `ChatServer`. It's not a special method, it's just a method we've added ourselves.
+
+The implementation has three sections, and we'll skip over most of the lines to highlight the important parts:
+
+```typescript
+  async replyWithLlama() {
+    // 1. Setup
+    // ...
+    const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
+
+    // 2. Run the AI
+    // ...
+    const stream = await this.ai.run("@cf/meta/llama-2-7b-chat-int8", {
+      messages: prompt as any,
+      stream: true,
+    });
+
+    // 3. Process the streamed response
+    for await (const part of eventStream) {
+      // ...
+      aiMsg.body = response;
+      this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
+    }
+  }
+```
+
+Breaking this down:
+
+1. "Setup" creates an array of message objects as expected by a chat-style AI model. We make a placeholder message using the same `createMessage` function as earlier. By broadcasting this message to the clients, and keeping the same ID, we'll be able to stream updates to it.
+2. "Run the AI" is a single function call that runs Meta's open chat model `llama-2-7b-chat-int8`. It takes a prompt (our messages) and we've asked it to stream tokens back to us as they are generated.
+3. "Process the streamed response" is a loop that runs as the AI generates tokens. We consume the stram, update the message object with the new text, and broadcast it to all clients.
+
+The result is that the AI will generate a reply to every message that any user sends.
+
+### Using OpenAI instead of Llama2
+
+Another method in `ChatServer`, called `replyWithOpenAI`, shows how to achieve this same result using OpenAI.
+
+The bulk of the code is in a separate file, `party/openai.ts`. This is a wrapper around the OpenAI API.
+
+You'll need an OpenAI key to use their API: copy the file `.env.example` to `.env` and add your key there (you can also add your organization ID if you have one; remove the line if not).
+
+Look in `party/openai.ts` and note the line:
+
+```typescript
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_API_ORGANIZATION,
+});
+```
+
+We get access to environment variables on the server using `process.env`.
+
+This OpenAI API wrapper is similar to the previous example: it receives a stream of tokens and we can process them as they arrive. The method of consuming the stream is a little different, but the messages are broadcast to clients identically.
+
+You'll also see in this function how to calculate OpenAI token usage, which we're not making use of here but is generally helpful to know about.
+
+## Deploying the project
+
+So far we've been running this project locally. Let's deploy it to the PartyKit platform.
+
+Type:
+
+```
+npm run deploy
+# or `npx partykit deploy`, it's the same
+```
+
+If you haven't signed in then you'll be prompted to do so.
+
+The name of your project is in `partykit.json` in a mandatory field. Here we've called it `chat-room`:
+
+```jsonc
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "chat-room",
+  // ...
+}
+```
+
+...but you can change the name if you like.
+
+Wait a couple minutes for your project to deploy.
+
+Now visit your project at `https://chat-room.<your-username>.partykit.dev`. You'll see the same chat room UI as before, but this time it's running on the PartyKit platform.
+
+Any environment variables you've set in `.env` have been included in the server code. Helpfully they are _not_ available in the client code.
+
+## What next?
+
+We've built a multiplayer chatroom with AI-generated replies, and deployed it to our global, scalable, realtime edge network!
+
+PartyKit servers can also respond to HTTP requests using `onRequest` instead of `onMessage`, so you could add an API. Add CORS headers to allow your existing client-side code to integrate this chatroom. You can drop all the client-side code in `app/`.
+
+Standard functions such as `fetch` work as expected on the server, so you can add more actions to your new multiplayer chat.
+
+Multiple PartyKit servers can be deployed in the same project, and they can communicate with each other. You can use this to build more complex applications, such as having a realtime dashboard to track aggregate AI usage alongside the chatroom, or another server to handle authentication or perhaps presence and lobbies.

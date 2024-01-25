@@ -25,6 +25,8 @@ export default function ChatRoom(props: { host?: string; roomName: string }) {
     return [...prevMessages, message];
   };
 
+  // Imported like:
+  // import usePartySocket from "partysocket/react";
   const socket = usePartySocket({
     host: props.host, // defaults to window.location.host if not set
     //party: "main", -- defaults to "main"
