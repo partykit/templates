@@ -1,6 +1,6 @@
 import styles from "./MessageList.module.css";
 import { useEffect, useRef } from "react";
-import type { Message, User } from "../shared";
+import type { Message, User } from "../../party/shared";
 
 export default function MessageList(props: {
   user: User | null;

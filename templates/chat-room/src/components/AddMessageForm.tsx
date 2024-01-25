@@ -1,7 +1,7 @@
 import styles from "./AddMessageForm.module.css";
 import { useState } from "react";
-import type { Message, User } from "../shared";
-import { createMessage } from "../shared";
+import type { Message, User } from "../../party/shared";
+import { createMessage } from "../../party/shared";
 
 export default function AddMessageForm(props: {
   addMessage: (message: Message) => void;

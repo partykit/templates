@@ -1,11 +1,14 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
   "name": "chat-room",
-  "main": "src/server.ts",
+  "main": "party/server.ts",
   "compatibilityDate": "2024-01-25",
+  "ai": true,
   "serve": {
+    // Serve this directory as static files from the root
+    // of the PartyKit host
     "path": "public",
+    // Run this build script before serving
     "build": "src/client.tsx"
-  },
-  "ai": true
+  }
 }

@@ -1,7 +1,7 @@
 import styles from "./ChatRoom.module.css";
 import { useState } from "react";
 //import { useUser } from "~/providers/user-context";
-import type { Message, User } from "../shared";
+import type { Message, User } from "../../party/shared";
 import AddMessageForm from "./AddMessageForm";
 import MessageList from "./MessageList";
 import usePartySocket from "partysocket/react";
