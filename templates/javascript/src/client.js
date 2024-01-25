@@ -6,7 +6,7 @@ import "./styles.css";
 import PartySocket from "partysocket";
 
 /**
- * @type {number | undefined}
+ * @type {ReturnType<typeof setInterval>}
  */
 let pingInterval;
 

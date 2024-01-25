@@ -2,7 +2,6 @@ import type * as Party from "partykit/server";
 import { Ai } from "partykit-ai";
 import { type Message, createMessage } from "./shared";
 import { getChatCompletionResponse, type OpenAIMessage } from "./openai";
-// @ts-ignore
 import { EventSourceParserStream } from "eventsource-parser/stream";
 
 const AI_USER = { name: "AI" };
@@ -60,7 +59,7 @@ export default class ChatServer implements Party.Server {
   async replyWithLlama() {
     // 1. Setup
     const messages = this.messages.map((msg) => {
-      return { role: msg.role, content: msg.body } as any; //as OpenAIMessage;
+      return { role: msg.role, content: msg.body } as Message; //as OpenAIMessage;
     });
     const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
     this.messages.push(aiMsg);
