@@ -15,8 +15,8 @@ function cellStyles(i: number, j: number) {
   };
 }
 
-export default function Grid() {
-  const { size, synced, isActive, setActive } = useMosaic("default-room");
+export default function Grid({ room }: { room: string }) {
+  const { size, synced, isActive, setActive } = useMosaic(room);
 
   if (!synced) return <p>Loading...</p>;
 
