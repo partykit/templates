@@ -1,30 +1,33 @@
 import type * as Party from "partykit/server";
 
 export const SINGLETON_ROOM_ID = "index";
+export interface Rooms {
+  [key: string]: number;
+}
 
 export default class RoomsServer implements Party.Server {
   // Count how many people are in each room for the
   // main party
-  count: Map<string, number>;
+  rooms: Rooms;
 
   constructor(public room: Party.Room) {
-    this.count = new Map<string, number>();
+    this.rooms = {};
   }
 
   onConnect(connection: Party.Connection) {
-    connection.send(JSON.stringify({ type: "rooms", count: this.count }));
+    connection.send(JSON.stringify({ type: "rooms", rooms: this.rooms }));
   }
 
   async onRequest(req: Party.Request) {
     if (req.method === "POST") {
       const { room, count } = (await req.json()) as any;
       if (count === 0) {
-        this.count.delete(room);
+        delete this.rooms[room];
       } else {
-        this.count.set(room, count);
+        this.rooms[room] = count;
       }
-      this.room.broadcast(JSON.stringify({ type: "rooms", count: this.count }));
-      //console.log("rooms", this.count);
+      this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
+      console.log("rooms", this.rooms);
       return Response.json({ ok: true });
     }
 
