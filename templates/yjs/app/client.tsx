@@ -9,7 +9,7 @@ function App() {
   return (
     <main>
       <h1>🎈 Welcome to PartyKit!</h1>
-      <Room room={currentRoom} />
+      <Room room={currentRoom} key={currentRoom} />
       <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
     </main>
   );
