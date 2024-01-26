@@ -1,5 +1,5 @@
 import styles from "./Grid.module.css";
-import useMosaic, { KEY } from "../hooks/useMosaic";
+import useMosaic from "../hooks/useMosaic";
 
 function containerStyles(size: number) {
   return {

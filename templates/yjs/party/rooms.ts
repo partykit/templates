@@ -19,7 +19,7 @@ export default class RoomsServer implements Party.Server {
 
   async onRequest(req: Party.Request) {
     if (req.method === "POST") {
-      const { room, count } = (await req.json()) as any;
+      const { room, count }: { room: string; count: number } = await req.json();
       this.rooms[room] = count;
       this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
       return Response.json({ ok: true });
