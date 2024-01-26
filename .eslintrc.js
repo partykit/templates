@@ -14,7 +14,7 @@ module.exports = {
     "plugin:react-hooks/recommended",
     "plugin:deprecation/recommended",
   ],
-  ignorePatterns: ["node_modules", ".eslintrc.js", "*.d.ts"],
+  ignorePatterns: ["node_modules", ".eslintrc.js", "*.d.ts", "**/public/dist"],
   rules: {
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/return-await": "error",
