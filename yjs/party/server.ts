@@ -1,31 +1,26 @@
 import type * as Party from "partykit/server";
+import { onConnect, type YPartyKitOptions } from "y-partykit";
+import type { Doc } from "yjs";
 
-export default class Server implements Party.Server {
-  constructor(readonly room: Party.Room) {}
+export default class MosaicServer implements Party.Server {
+  yjsOptions: YPartyKitOptions = {};
+  constructor(public room: Party.Room) {}
 
-  onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
-    // A websocket just connected!
-    console.log(
-      `Connected:
-  id: ${conn.id}
-  room: ${this.room.id}
-  url: ${new URL(ctx.request.url).pathname}`
-    );
-
-    // let's send a message to the connection
-    conn.send("hello from server");
+  getOpts() {
+    // options must match when calling unstable_getYDoc and onConnect
+    const opts: YPartyKitOptions = {
+      callback: { handler: (doc) => this.handleYDocChange(doc) },
+    };
+    return opts;
   }
 
-  onMessage(message: string, sender: Party.Connection) {
-    // let's log the message
-    console.log(`connection ${sender.id} sent message: ${message}`);
-    // as well as broadcast it to all the other connections in the room...
-    this.room.broadcast(
-      `${sender.id}: ${message}`,
-      // ...except for the connection it came from
-      [sender.id]
-    );
+  onConnect(conn: Party.Connection) {
+    return onConnect(conn, this.room, this.getOpts());
+  }
+
+  handleYDocChange(doc: Doc) {
+    console.log("ydoc changed");
+    // called on every ydoc change
+    // no-op
   }
 }
-
-Server satisfies Party.Worker;

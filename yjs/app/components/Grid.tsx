@@ -1,5 +1,5 @@
 import styles from "./Grid.module.css";
-import useMosaic from "../hooks/useMosaic";
+import useMosaic, { KEY } from "../hooks/useMosaic";
 
 function containerStyles(size: number) {
   return {
@@ -16,7 +16,9 @@ function cellStyles(i: number, j: number) {
 }
 
 export default function Grid() {
-  const { size, isActive, setActive } = useMosaic("default-room");
+  const { size, synced, isActive, setActive } = useMosaic("default-room");
+
+  if (!synced) return <p>Loading...</p>;
 
   const indices = Array.from({ length: size }, (_, i) =>
     Array.from({ length: size }, (_, j) => ({ i: i + 1, j: j + 1 }))
