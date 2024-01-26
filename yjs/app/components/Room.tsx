@@ -1,5 +1,6 @@
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
+import Grid from "./Grid";
 
 export default function Room({ room }: { room: string }) {
   const [latestMessage, setLatestMessage] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export default function Room({ room }: { room: string }) {
       <p>Room: {room}</p>
       <button onClick={() => socket.send("Hello!")}>Send message</button>
       {latestMessage && <p>Latest message: {latestMessage}</p>}
+      <Grid />
     </div>
   );
 }

@@ -1,0 +1,14 @@
+.container {
+  max-width: 20rem;
+  display: grid;
+  gap: 10px; /* Adjust the gap as needed */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: yellow;
+}
+
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
