@@ -1,7 +1,11 @@
-import Grid from "./Grid";
+import styles from "./Room.module.css";
+import { useState } from "react";
 import useMosaic from "../hooks/useMosaic";
+import Grid from "./Grid";
+import Palette from "./Palette";
 
 export default function Room({ room }: { room: string }) {
+  const [currentColor, setCurrentColor] = useState("red");
   const { size, synced, isActive, setActive, clear } = useMosaic(room);
 
   return (
@@ -9,10 +13,16 @@ export default function Room({ room }: { room: string }) {
       <h1>🎈 Current room: {room}</h1>
       {!synced && <p>Loading...</p>}
       {synced && (
-        <>
+        <div className={styles.layout}>
           <Grid size={size} isActive={isActive} setActive={setActive} />
-          <button onClick={() => clear()}>Clear</button>
-        </>
+          <div className={styles.controls}>
+            <Palette
+              currentColor={currentColor}
+              setCurrentColor={setCurrentColor}
+            />
+            <button onClick={() => clear()}>Clear</button>
+          </div>
+        </div>
       )}
     </>
   );
