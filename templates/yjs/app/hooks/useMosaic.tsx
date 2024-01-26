@@ -8,6 +8,7 @@ type MosaicHookReturnType = {
   synced: boolean;
   isActive: (i: number, j: number) => boolean;
   setActive: (i: number, j: number, active: boolean) => void;
+  clear: () => void;
 };
 
 export const KEY = (i: number, j: number) => `${i}-${j}`;
@@ -40,10 +41,6 @@ export default function useMosaic(room: string): MosaicHookReturnType {
     };
   }, [provider.doc]);
 
-  // Calculate the size based on the room string
-  // Replace this with your own logic
-  // ...
-
   const isActive = (i: number, j: number): boolean => {
     const cells = provider.doc.getMap("cells");
     return (cells.get(KEY(i, j)) as boolean) || false;
@@ -55,10 +52,18 @@ export default function useMosaic(room: string): MosaicHookReturnType {
     cells.set(KEY(i, j), active);
   };
 
+  const clear = () => {
+    const cells = provider.doc.getMap("cells");
+    cells.forEach((_, key) => {
+      cells.delete(key);
+    });
+  };
+
   return {
     size: DEFAULT_GRID_SIZE,
     synced,
     isActive,
     setActive,
+    clear,
   };
 }

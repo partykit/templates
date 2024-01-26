@@ -10,7 +10,7 @@ export default function Lobby({
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
 }) {
-  const [occupied, setOccupied] = useState<Rooms>({});
+  const [rooms, setRooms] = useState<Rooms>({});
 
   usePartySocket({
     // host: props.host, -- defaults to window.location.host if not set
@@ -19,7 +19,7 @@ export default function Lobby({
     onMessage(evt) {
       const data = JSON.parse(evt.data);
       if (data.type === "rooms") {
-        setOccupied(data.rooms as Rooms);
+        setRooms(data.rooms as Rooms);
         console.log("rooms", data);
       }
     },
@@ -30,10 +30,10 @@ export default function Lobby({
 
   return (
     <div className={styles.sidebar}>
-      <h3>Occupied Rooms</h3>
+      <h3>Rooms</h3>
       <p>Current room: {currentRoom}</p>
       <ul>
-        {Object.entries(occupied).map(([room, count]) => (
+        {Object.entries(rooms).map(([room, count]) => (
           <li key={room}>
             <button onClick={() => setCurrentRoom(room)}>
               {room}: {count}

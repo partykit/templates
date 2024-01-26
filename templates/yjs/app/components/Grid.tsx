@@ -16,7 +16,7 @@ function cellStyles(i: number, j: number) {
 }
 
 export default function Grid({ room }: { room: string }) {
-  const { size, synced, isActive, setActive } = useMosaic(room);
+  const { size, synced, isActive, setActive, clear } = useMosaic(room);
 
   if (!synced) return <p>Loading...</p>;
 
@@ -29,17 +29,20 @@ export default function Grid({ room }: { room: string }) {
   };
 
   return (
-    <div className={styles.container} style={containerStyles(size)}>
-      {indices.map(({ i, j }) => {
-        return (
-          <div
-            key={`${i}-${j}`}
-            className={`${styles.cell} ${isActive(i, j) && styles.active}`}
-            style={cellStyles(i, j)}
-            onClick={() => toggle(i, j)}
-          />
-        );
-      })}
-    </div>
+    <>
+      <div className={styles.container} style={containerStyles(size)}>
+        {indices.map(({ i, j }) => {
+          return (
+            <div
+              key={`${i}-${j}`}
+              className={`${styles.cell} ${isActive(i, j) && styles.active}`}
+              style={cellStyles(i, j)}
+              onClick={() => toggle(i, j)}
+            />
+          );
+        })}
+      </div>
+      <button onClick={() => clear()}>Clear</button>
+    </>
   );
 }

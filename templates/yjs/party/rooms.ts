@@ -6,8 +6,7 @@ export interface Rooms {
 }
 
 export default class RoomsServer implements Party.Server {
-  // Count how many people are in each room for the
-  // main party
+  // Track room occupancy
   rooms: Rooms;
 
   constructor(public room: Party.Room) {
@@ -21,13 +20,8 @@ export default class RoomsServer implements Party.Server {
   async onRequest(req: Party.Request) {
     if (req.method === "POST") {
       const { room, count } = (await req.json()) as any;
-      if (count === 0) {
-        delete this.rooms[room];
-      } else {
-        this.rooms[room] = count;
-      }
+      this.rooms[room] = count;
       this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
-      console.log("rooms", this.rooms);
       return Response.json({ ok: true });
     }
 

@@ -5,10 +5,9 @@ import Room from "./components/Room";
 import Lobby from "./components/Lobby";
 
 function App() {
-  const [currentRoom, setCurrentRoom] = useState<string>("default-room");
+  const [currentRoom, setCurrentRoom] = useState("default");
   return (
     <main>
-      <h1>🎈 Welcome to PartyKit!</h1>
       <Room room={currentRoom} key={currentRoom} />
       <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
     </main>

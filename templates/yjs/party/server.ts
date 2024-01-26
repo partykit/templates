@@ -24,8 +24,8 @@ export default class MosaicServer implements Party.Server {
     await this.updateCount();
   }
 
-  handleYDocChange(doc: Doc) {
-    console.log("ydoc changed");
+  handleYDocChange(_: Doc) {
+    //console.log("ydoc changed");
     // called on every ydoc change
     // no-op
   }
