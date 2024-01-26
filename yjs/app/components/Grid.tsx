@@ -16,21 +16,25 @@ function cellStyles(i: number, j: number) {
 }
 
 export default function Grid() {
-  const { size, isActive } = useMosaic("default-room");
+  const { size, isActive, setActive } = useMosaic("default-room");
 
   const indices = Array.from({ length: size }, (_, i) =>
     Array.from({ length: size }, (_, j) => ({ i: i + 1, j: j + 1 }))
   ).flat();
 
+  const toggle = (i: number, j: number) => {
+    setActive(i, j, !isActive(i, j));
+  };
+
   return (
     <div className={styles.container} style={containerStyles(size)}>
       {indices.map(({ i, j }) => {
-        const backgroundColor = isActive(i, j) ? "pink" : "transparent";
         return (
           <div
             key={`${i}-${j}`}
-            className={styles.cell}
-            style={{ ...cellStyles(i, j), backgroundColor }}
+            className={`${styles.cell} ${isActive(i, j) && styles.active}`}
+            style={cellStyles(i, j)}
+            onClick={() => toggle(i, j)}
           />
         );
       })}
