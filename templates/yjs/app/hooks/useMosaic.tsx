@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import useYProvider from "y-partykit/react";
+import { COLORS, DEFAULT_COLOR } from "../components/Palette";
 
 const DEFAULT_GRID_SIZE = 16;
 
 type MosaicHookReturnType = {
   size: number;
   synced: boolean;
-  isActive: (i: number, j: number) => boolean;
-  setActive: (i: number, j: number, active: boolean) => void;
+  getColor: (i: number, j: number) => string | undefined;
+  setColor: (i: number, j: number, color: string | null) => void;
   clear: () => void;
 };
 
@@ -41,15 +42,21 @@ export default function useMosaic(room: string): MosaicHookReturnType {
     };
   }, [provider.doc]);
 
-  const isActive = (i: number, j: number): boolean => {
+  const getColor = (i: number, j: number): string | undefined => {
     const cells = provider.doc.getMap("cells");
-    return (cells.get(KEY(i, j)) as boolean) || false;
+    const color = cells.get(KEY(i, j)) as string | undefined;
+    if (!color) return;
+    return COLORS.includes(color) ? color : DEFAULT_COLOR;
   };
 
-  const setActive = (i: number, j: number, active: boolean): void => {
+  const setColor = (i: number, j: number, color: string | null): void => {
     // Update the server
     const cells = provider.doc.getMap("cells");
-    cells.set(KEY(i, j), active);
+    if (color === null) {
+      cells.delete(KEY(i, j));
+    } else {
+      cells.set(KEY(i, j), color);
+    }
   };
 
   const clear = () => {
@@ -62,8 +69,8 @@ export default function useMosaic(room: string): MosaicHookReturnType {
   return {
     size: DEFAULT_GRID_SIZE,
     synced,
-    isActive,
-    setActive,
+    getColor,
+    setColor,
     clear,
   };
 }

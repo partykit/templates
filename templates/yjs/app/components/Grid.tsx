@@ -16,19 +16,27 @@ function cellStyles(i: number, j: number) {
 
 export default function Grid({
   size,
-  isActive,
-  setActive,
+  getColor,
+  setColor,
+  currentColor,
 }: {
   size: number;
-  isActive: (i: number, j: number) => boolean;
-  setActive: (i: number, j: number, active: boolean) => void;
+  getColor: (i: number, j: number) => string | undefined;
+  setColor: (i: number, j: number, color: string | null) => void;
+  currentColor: string;
 }) {
   const indices = Array.from({ length: size }, (_, i) =>
     Array.from({ length: size }, (_, j) => ({ i: i + 1, j: j + 1 }))
   ).flat();
 
-  const toggle = (i: number, j: number) => {
-    setActive(i, j, !isActive(i, j));
+  const paint = (i: number, j: number) => {
+    // If the cell is already the current color, clear it
+    const color = getColor(i, j);
+    if (color === currentColor) {
+      setColor(i, j, null);
+    } else {
+      setColor(i, j, currentColor);
+    }
   };
 
   return (
@@ -37,9 +45,9 @@ export default function Grid({
         return (
           <div
             key={`${i}-${j}`}
-            className={`${styles.cell} ${isActive(i, j) && styles.active}`}
-            style={cellStyles(i, j)}
-            onClick={() => toggle(i, j)}
+            className={styles.cell}
+            style={{ backgroundColor: getColor(i, j), ...cellStyles(i, j) }}
+            onClick={() => paint(i, j)}
           />
         );
       })}

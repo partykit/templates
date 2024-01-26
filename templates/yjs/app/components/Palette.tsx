@@ -1,6 +1,6 @@
 import styles from "./Palette.module.css";
 
-const COLORS = [
+export const COLORS = [
   "FireBrick",
   "Tomato",
   "OrangeRed",

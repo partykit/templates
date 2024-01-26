@@ -6,7 +6,7 @@ import Palette, { DEFAULT_COLOR } from "./Palette";
 
 export default function Room({ room }: { room: string }) {
   const [currentColor, setCurrentColor] = useState(DEFAULT_COLOR);
-  const { size, synced, isActive, setActive, clear } = useMosaic(room);
+  const { size, synced, getColor, setColor, clear } = useMosaic(room);
 
   return (
     <>
@@ -14,7 +14,12 @@ export default function Room({ room }: { room: string }) {
       {!synced && <p>Loading...</p>}
       {synced && (
         <div className={styles.layout}>
-          <Grid size={size} isActive={isActive} setActive={setActive} />
+          <Grid
+            size={size}
+            getColor={getColor}
+            setColor={setColor}
+            currentColor={currentColor}
+          />
           <div className={styles.controls}>
             <Palette
               currentColor={currentColor}
