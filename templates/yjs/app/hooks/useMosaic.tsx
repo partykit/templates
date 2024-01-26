@@ -1,6 +1,5 @@
-import { useState, useMemo } from "react";
-import YPartyKitProvider from "y-partykit/provider";
-import * as Y from "yjs";
+import { useState, useEffect } from "react";
+import useYProvider from "y-partykit/react";
 
 const DEFAULT_GRID_SIZE = 20;
 
@@ -15,31 +14,37 @@ export const KEY = (i: number, j: number) => `${i}-${j}`;
 
 export default function useMosaic(room: string): MosaicHookReturnType {
   const [synced, setSynced] = useState(false);
+  const [, setEditCounter] = useState<number>(0);
 
-  const { yDoc } = useMemo(() => {
-    const yDoc = new Y.Doc();
-    const provider = new YPartyKitProvider("127.0.0.1:1999", room, yDoc, {
-      //party: "main",
-    });
+  const provider = useYProvider({
+    room,
+    options: {},
+  });
+  useEffect(() => {
     provider.on("synced", () => {
       console.log("synced");
       setSynced(true);
     });
-    return { yDoc };
-  }, [room]);
+  }, [provider]);
+
+  useEffect(() => {
+    provider.doc.getMap("cells").observe(() => {
+      setEditCounter((prev) => prev + 1);
+    });
+  }, [provider.doc]);
 
   // Calculate the size based on the room string
   // Replace this with your own logic
   // ...
 
   const isActive = (i: number, j: number): boolean => {
-    const cells = yDoc.getMap("cells");
+    const cells = provider.doc.getMap("cells");
     return (cells.get(KEY(i, j)) as boolean) || false;
   };
 
   const setActive = (i: number, j: number, active: boolean): void => {
     // Update the server
-    const cells = yDoc.getMap("cells");
+    const cells = provider.doc.getMap("cells");
     cells.set(KEY(i, j), active);
   };
 

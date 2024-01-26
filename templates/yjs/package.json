@@ -1,5 +1,5 @@
 {
-  "name": "yjs",
+  "name": "partykit-yjs-starter",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,8 @@
     "partysocket": "^0.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "y-partykit": "^0.0.19"
+    "y-partykit": "^0.0.19",
+    "yjs": "^13.6.11"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
