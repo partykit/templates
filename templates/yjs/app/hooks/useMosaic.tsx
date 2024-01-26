@@ -20,6 +20,7 @@ export default function useMosaic(room: string): MosaicHookReturnType {
     room,
     options: {},
   });
+  console.log("provider", provider.id, "for room", room);
   useEffect(() => {
     provider.on("synced", () => {
       console.log("synced");
