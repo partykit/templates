@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "yjs",
+  "name": "pixel-editor",
   "main": "party/server.ts",
   "compatibilityDate": "2024-01-26",
   "parties": {
