@@ -2,7 +2,7 @@ import styles from "./Grid.module.css";
 
 const GRID_SIZE = 20;
 
-const DEFAULT_GRID_ITEMS = [
+const ACTIVE_GRID_ITEMS = [
   { i: 1, j: 3, color: "red" },
   { i: 5, j: 2 },
   { i: 1, j: 1, color: "green" },
@@ -18,24 +18,33 @@ function containerStyles(size: number) {
   };
 }
 
-function itemStyles(item: { i: number; j: number; color?: string }) {
+function cellStyles(i: number, j: number) {
   return {
-    gridRow: `${item.i} / span 1`,
-    gridColumn: `${item.j} / span 1`,
-    backgroundColor: item.color ?? "black",
+    gridRow: `${i} / span 1`,
+    gridColumn: `${j} / span 1`,
   };
 }
+
+const indices = Array.from({ length: GRID_SIZE }, (_, i) =>
+  Array.from({ length: GRID_SIZE }, (_, j) => ({ i: i + 1, j: j + 1 }))
+).flat();
 
 export default function Grid() {
   return (
     <div className={styles.container} style={containerStyles(GRID_SIZE)}>
-      {DEFAULT_GRID_ITEMS.map((item) => (
-        <div
-          key={`${item.i}-${item.j}`}
-          className={styles.item}
-          style={itemStyles(item)}
-        />
-      ))}
+      {indices.map(({ i, j }) => {
+        const activeItem = ACTIVE_GRID_ITEMS.find(
+          (item) => item.i === i && item.j === j
+        );
+        const backgroundColor = activeItem?.color ?? "pink";
+        return (
+          <div
+            key={`${i}-${j}`}
+            className={styles.cell}
+            style={{ ...cellStyles(i, j), backgroundColor }}
+          />
+        );
+      })}
     </div>
   );
 }

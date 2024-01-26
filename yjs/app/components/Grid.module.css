@@ -5,10 +5,9 @@
   display: grid;
   /* row/column template count is added by the component */
   gap: 0.25rem;
-  background-color: white;
 }
 
-.item {
+.cell {
   display: flex;
   justify-content: center;
   align-items: center;
