@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useYProvider from "y-partykit/react";
 
-const DEFAULT_GRID_SIZE = 20;
+const DEFAULT_GRID_SIZE = 16;
 
 type MosaicHookReturnType = {
   size: number;
