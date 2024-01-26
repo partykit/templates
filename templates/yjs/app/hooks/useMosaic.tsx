@@ -28,9 +28,15 @@ export default function useMosaic(room: string): MosaicHookReturnType {
   }, [provider]);
 
   useEffect(() => {
-    provider.doc.getMap("cells").observe(() => {
+    function observeCells() {
       setEditCounter((prev) => prev + 1);
-    });
+    }
+
+    provider.doc.getMap("cells").observe(observeCells);
+
+    return () => {
+      provider.doc.getMap("cells").unobserve(observeCells);
+    };
   }, [provider.doc]);
 
   // Calculate the size based on the room string
