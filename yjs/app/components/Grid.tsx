@@ -1,13 +1,13 @@
 import styles from "./Grid.module.css";
 
-const GRID_SIZE = 6;
+const GRID_SIZE = 20;
 
 const DEFAULT_GRID_ITEMS = [
   { i: 1, j: 3, color: "red" },
   { i: 5, j: 2 },
   { i: 1, j: 1, color: "green" },
   { i: 4, j: 5 },
-  { i: 6, j: 6 },
+  { i: 20, j: 20, color: "yellow" },
   { i: 3, j: 3 },
 ];
 

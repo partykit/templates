@@ -12,11 +12,11 @@ export default function Room({ room }: { room: string }) {
   });
 
   return (
-    <div>
+    <>
+      <Grid />
       <p>Room: {room}</p>
       <button onClick={() => socket.send("Hello!")}>Send message</button>
       {latestMessage && <p>Latest message: {latestMessage}</p>}
-      <Grid />
-    </div>
+    </>
   );
 }

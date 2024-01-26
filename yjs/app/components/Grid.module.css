@@ -1,14 +1,16 @@
 .container {
-  max-width: 20rem;
-  display: grid;
-  gap: 10px; /* Adjust the gap as needed */
+  max-width: 32rem;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background-color: yellow;
+  display: grid;
+  /* row/column template count is added by the component */
+  gap: 0.25rem;
+  background-color: white;
 }
 
 .item {
   display: flex;
   justify-content: center;
   align-items: center;
+  /* row/column position/span is added by the component */
 }
