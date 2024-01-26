@@ -1,15 +1,5 @@
 import styles from "./Grid.module.css";
-
-const GRID_SIZE = 20;
-
-const ACTIVE_GRID_ITEMS = [
-  { i: 1, j: 3, color: "red" },
-  { i: 5, j: 2 },
-  { i: 1, j: 1, color: "green" },
-  { i: 4, j: 5 },
-  { i: 20, j: 20, color: "yellow" },
-  { i: 3, j: 3 },
-];
+import useMosaic from "../hooks/useMosaic";
 
 function containerStyles(size: number) {
   return {
@@ -25,18 +15,17 @@ function cellStyles(i: number, j: number) {
   };
 }
 
-const indices = Array.from({ length: GRID_SIZE }, (_, i) =>
-  Array.from({ length: GRID_SIZE }, (_, j) => ({ i: i + 1, j: j + 1 }))
-).flat();
-
 export default function Grid() {
+  const { size, isActive } = useMosaic("default-room");
+
+  const indices = Array.from({ length: size }, (_, i) =>
+    Array.from({ length: size }, (_, j) => ({ i: i + 1, j: j + 1 }))
+  ).flat();
+
   return (
-    <div className={styles.container} style={containerStyles(GRID_SIZE)}>
+    <div className={styles.container} style={containerStyles(size)}>
       {indices.map(({ i, j }) => {
-        const activeItem = ACTIVE_GRID_ITEMS.find(
-          (item) => item.i === i && item.j === j
-        );
-        const backgroundColor = activeItem?.color ?? "pink";
+        const backgroundColor = isActive(i, j) ? "pink" : "transparent";
         return (
           <div
             key={`${i}-${j}`}
