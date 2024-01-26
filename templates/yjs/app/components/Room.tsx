@@ -2,10 +2,10 @@ import styles from "./Room.module.css";
 import { useState } from "react";
 import useMosaic from "../hooks/useMosaic";
 import Grid from "./Grid";
-import Palette from "./Palette";
+import Palette, { DEFAULT_COLOR } from "./Palette";
 
 export default function Room({ room }: { room: string }) {
-  const [currentColor, setCurrentColor] = useState("red");
+  const [currentColor, setCurrentColor] = useState(DEFAULT_COLOR);
   const { size, synced, isActive, setActive, clear } = useMosaic(room);
 
   return (

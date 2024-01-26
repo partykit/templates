@@ -1,6 +1,25 @@
 import styles from "./Palette.module.css";
 
-const COLORS = ["red", "green", "blue", "orange"];
+const COLORS = [
+  "FireBrick",
+  "Tomato",
+  "OrangeRed",
+  "Coral",
+  "DarkOrange",
+  "Gold",
+  "ForestGreen",
+  "PaleGreen",
+  "DodgerBlue",
+  "LightSkyBlue",
+  "RebeccaPurple",
+  "LightPink",
+  "DimGray",
+  "Gainsboro",
+  "black",
+  "white",
+];
+
+export const DEFAULT_COLOR = "OrangeRed";
 
 export default function Palette({
   currentColor,
