@@ -35,9 +35,15 @@ export default class ChatServer implements Party.Server {
       );
 
       // Optionally use OpenAI
-      //await this.replyWithOpenAI();
-      await this.replyWithLlama();
+      await this.replyWithOpenAI();
+      //await this.replyWithLlama();
     }
+  }
+
+  async onRequest(_: Party.Request) {
+    return new Response(
+      `Hello from onRequest!\n\nparty: ${this.room.name}\n room: ${this.room.id}`
+    );
   }
 
   async replyWithOpenAI() {

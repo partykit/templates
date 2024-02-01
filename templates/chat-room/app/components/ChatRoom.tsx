@@ -1,14 +1,37 @@
 import styles from "./ChatRoom.module.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 //import { useUser } from "~/providers/user-context";
 import type { Message, User } from "../../party/shared";
 import AddMessageForm from "./AddMessageForm";
 import MessageList from "./MessageList";
 import usePartySocket from "partysocket/react";
 
+function getRandomUserName() {
+  const animals = [
+    "Ant",
+    "Bear",
+    "Camel",
+    "Cat",
+    "Chicken",
+    "Deer",
+    "Giraffe",
+    "Kangaroo",
+    "Lion",
+    "Monkey",
+    "Narwhal",
+    "Tiger",
+  ];
+
+  return `Anonymous ${animals[Math.floor(Math.random() * animals.length)]}`;
+}
+
 export default function ChatRoom(props: { host?: string; roomName: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const { user } = { user: { name: "Anonymous User" } as User };
+  const { user } = {
+    user: {
+      name: useMemo(() => getRandomUserName(), []),
+    } as User,
+  };
 
   const handleUpdate = (prevMessages: Message[], message: Message) => {
     // If message.id is already in prevMessages, replace it
@@ -40,7 +63,7 @@ export default function ChatRoom(props: { host?: string; roomName: string }) {
       }
     },
   });
-
+  console.log("socket", socket.id);
   const addMessage = (message: Message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
     socket.send(JSON.stringify({ type: "message", message }));

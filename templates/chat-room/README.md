@@ -1,14 +1,19 @@
-# 🎈 chat-room
+# 🎈 Template: chat-room
 
 Welcome to the party, pal!
 
 This is a [Partykit](https://partykit.io) project, which lets you create real-time collaborative applications with minimal coding effort.
 
-[`server.ts`](./src/server.ts) is the server-side code, which is responsible for handling WebSocket events and HTTP requests. [`client.ts`](./src/client.ts) is the client-side code, which connects to the server and listens for events.
+This is an end-to-end example of:
 
-You can start developing by running `npm run dev` and opening [http://localhost:1999](http://localhost:1999) in your browser. When you're ready, you can deploy your application on to the PartyKit cloud with `npm run deploy`.
+- a multiplayer chat room
+- with AI-generated replies using either OpenAI or Llama2.
 
-Refer to our docs for more information: https://github.com/partykit/partykit/blob/main/README.md. For more help, reach out to us on [Discord](https://discord.gg/g5uqHQJc3z), [GitHub](https://github.com/partykit/partykit), or [Twitter](https://twitter.com/partykit_io).
+It's built with client-side React and a PartyKit server, and it's a good starting point for building your own PartyKit project.
+
+Refer to our docs for more information: https://github.com/partykit/partykit/blob/main/README.md. For more help, reach out to us on [Discord](https://discord.gg/g5uqHQJc3z), [GitHub](https://github.com/partykit/partykit), or [X/Twitter](https://twitter.com/partykit_io).
+
+![](/assets/chat-room.png)
 
 ## How it works
 
@@ -91,11 +96,11 @@ export default class ChatServer implements Party.Server {
 
 The PartyKit server is simply `ChatServer`. A new instance is created for each room, which is identified simply by a string.
 
-So when you run this example locally, you can reach a room at:
+So when you run this example locally, you can reach a room using either WebSockets or HTTP:
 
 `127.0.0.1:1999/party/a-room-name-goes-here`
 
-We'll talk about the supported protocols in the next section.
+We'll talk about how to support different protocols in the next section.
 
 The `ChatServer` class has a couple of instance variables. These are kept in memory for as long as the room is active.
 
@@ -106,7 +111,7 @@ _Note that in production, the room will spin down pretty quickly and this state 
 
 ### When a client connects
 
-Let's add some to code to `ChatServer` to handle when a client connects:
+Let's add some to code to `ChatServer` to handle a new WebSocket connection from a client:
 
 ```typescript
 onConnect(connection: Party.Connection) {
@@ -116,7 +121,10 @@ onConnect(connection: Party.Connection) {
 }
 ```
 
-This is a special method that is called when a client connects to the server. It's passed a `Party.Connection` object, which is a wrapper around a WebSocket connection. `connection.send(...)` sends arbitary data to the connected client.
+This is a **special method** that is called when a client connects to the server. It's passed a `Party.Connection` object, which is a wrapper around a WebSocket connection. `connection.send(...)` sends arbitary data to the connected client.
+
+> ![TIP]
+> Read the [Party.Server docs](https://docs.partykit.io/reference/partyserver-api/) to learn about all special methods.
 
 We've decided to use JSON to communicate between the client and server.
 
@@ -157,11 +165,17 @@ Look at the `onMessage` callback. It's called whenever the server sends a messag
 
 You don't have to use JSON to send messages back and forth. You can send any string data you want, or even binary data, for example by using msgpack. But JSON is a good default.
 
+Let's look at an overview of the flow of data:
+
+![](/assets/chat-room-flow.png)
+
+We'll build out this architecture in the following sections.
+
 ### When a client sends a new message
 
 What happens when you type a new message in the chat room UI and hit enter?
 
-Let's trace it through...
+Tracing it in the client code...
 
 - the form input field is in `app/components/AddMessageForm.tsx`
 - it creates a message object using `createMessage(...)` (defined in `party/shared.ts`). This takes the user-provided string and gives it a random ID.
@@ -210,7 +224,7 @@ async onMessage(messageString: string, connection: Party.Connection) {
 
 `onMessage` is another of those special methods. It's called whenever the server receives a message from a client.
 
-The only part to focus on here is `this.room.broadcast(...)`:
+**The only part to focus on here is `this.room.broadcast(...)`:**
 
 We've got `connection` -- that's the current client, the one that sent the message we're currently handling. But we need to ensure that _all clients_ have the new message. Here's how it works:
 
@@ -273,13 +287,19 @@ The implementation has three sections, and we'll skip over most of the lines to 
   }
 ```
 
-Breaking this down:
+> ![IMPORTANT]
+> AI support is in beta. To enable it, ensure that `"ai": true` is set in your `partykit.json` file.
+
+Breaking down the code:
 
 1. "Setup" creates an array of message objects as expected by a chat-style AI model. We make a placeholder message using the same `createMessage` function as earlier. By broadcasting this message to the clients, and keeping the same ID, we'll be able to stream updates to it.
 2. "Run the AI" is a single function call that runs Meta's open chat model `llama-2-7b-chat-int8`. It takes a prompt (our messages) and we've asked it to stream tokens back to us as they are generated.
 3. "Process the streamed response" is a loop that runs as the AI generates tokens. We consume the stram, update the message object with the new text, and broadcast it to all clients.
 
 The result is that the AI will generate a reply to every message that any user sends.
+
+> ![TIP]
+> See the [PartyKit AI docs](https://docs.partykit.io/reference/partykit-ai/) for other models and how to call them.
 
 ### Using OpenAI instead of Llama2
 
@@ -302,7 +322,8 @@ We get access to environment variables on the server using `process.env`.
 
 This OpenAI API wrapper is similar to the previous example: it receives a stream of tokens and we can process them as they arrive. The method of consuming the stream is a little different, but the messages are broadcast to clients identically.
 
-You'll also see in this function how to calculate OpenAI token usage, which we're not making use of here but is generally helpful to know about.
+> ![TIP]
+> You'll also see in this function how to calculate OpenAI token usage, which we're not making use of here but is often important to track.
 
 ## Deploying the project
 
@@ -335,6 +356,9 @@ Now visit your project at `https://chat-room.<your-username>.partykit.dev`. You'
 
 Any environment variables you've set in `.env` have been included in the server code. Helpfully they are _not_ available in the client code.
 
+> ![TIP]
+> See the [Configuration docs](https://docs.partykit.io/reference/partykit-configuration/) for other supported properties in `partykit.json`.
+
 ## What next?
 
 We've built a multiplayer chatroom with AI-generated replies, and deployed it to our global, scalable, realtime edge network!
@@ -343,4 +367,4 @@ PartyKit servers can also respond to HTTP requests using `onRequest` instead of 
 
 Standard functions such as `fetch` work as expected on the server, so you can add more actions to your new multiplayer chat.
 
-Multiple PartyKit servers can be deployed in the same project, and they can communicate with each other. You can use this to build more complex applications, such as having a realtime dashboard to track aggregate AI usage alongside the chatroom, or another server to handle authentication or perhaps presence and lobbies.
+Multiple PartyKit servers can be deployed in the same project, and they can communicate with each other. ([Learn about having multiple parties per project.](https://docs.partykit.io/guides/using-multiple-parties-per-project/)) You can use this to build more complex applications, such as having a realtime dashboard to track aggregate AI usage alongside the chatroom, or another server to handle authentication or perhaps presence and lobbies.
