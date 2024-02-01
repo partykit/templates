@@ -8,9 +8,12 @@
   },
   "dependencies": {
     "partysocket": "^0.0.25",
+    "quill-cursors": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-quill": "^2.0.0",
     "y-partykit": "^0.0.19",
+    "y-quill": "^0.1.5",
     "yjs": "^13.6.11"
   },
   "devDependencies": {
