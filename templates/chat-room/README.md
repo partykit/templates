@@ -123,7 +123,7 @@ onConnect(connection: Party.Connection) {
 
 This is a **special method** that is called when a client connects to the server. It's passed a `Party.Connection` object, which is a wrapper around a WebSocket connection. `connection.send(...)` sends arbitary data to the connected client.
 
-> ![TIP]
+> [!TIP]
 > Read the [Party.Server docs](https://docs.partykit.io/reference/partyserver-api/) to learn about all special methods.
 
 We've decided to use JSON to communicate between the client and server.
@@ -167,7 +167,7 @@ You don't have to use JSON to send messages back and forth. You can send any str
 
 Let's look at an overview of the flow of data:
 
-![image](assets/chat-room-flow.png)
+![image](assets/architecture.png)
 
 We'll build out this architecture in the following sections.
 
@@ -287,7 +287,7 @@ The implementation has three sections, and we'll skip over most of the lines to 
   }
 ```
 
-> ![IMPORTANT]
+> [!IMPORTANT]
 > AI support is in beta. To enable it, ensure that `"ai": true` is set in your `partykit.json` file.
 
 Breaking down the code:
@@ -298,7 +298,7 @@ Breaking down the code:
 
 The result is that the AI will generate a reply to every message that any user sends.
 
-> ![TIP]
+> [!TIP]
 > See the [PartyKit AI docs](https://docs.partykit.io/reference/partykit-ai/) for other models and how to call them.
 
 ### Using OpenAI instead of Llama2
@@ -322,7 +322,7 @@ We get access to environment variables on the server using `process.env`.
 
 This OpenAI API wrapper is similar to the previous example: it receives a stream of tokens and we can process them as they arrive. The method of consuming the stream is a little different, but the messages are broadcast to clients identically.
 
-> ![TIP]
+> [!TIP]
 > You'll also see in this function how to calculate OpenAI token usage, which we're not making use of here but is often important to track.
 
 ## Deploying the project
@@ -356,7 +356,7 @@ Now visit your project at `https://chat-room.<your-username>.partykit.dev`. You'
 
 Any environment variables you've set in `.env` have been included in the server code. Helpfully they are _not_ available in the client code.
 
-> ![TIP]
+> [!TIP]
 > See the [Configuration docs](https://docs.partykit.io/reference/partykit-configuration/) for other supported properties in `partykit.json`.
 
 ## What next?
