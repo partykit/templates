@@ -1,7 +1,6 @@
 import "./styles.css";
 import { createRoot } from "react-dom/client";
 import { useState, useMemo } from "react";
-import Room from "./components/Room";
 import Lobby from "./components/Lobby";
 import Editor from "./components/Editor";
 
@@ -15,7 +14,6 @@ function App() {
   const userColor = useMemo(() => getRandomColor(), []);
   return (
     <main>
-      {/*<Room room={currentRoom} key={currentRoom} />*/}
       <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <Editor room={currentRoom} userColor={userColor} key={currentRoom} />
     </main>

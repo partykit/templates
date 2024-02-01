@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
-import styles from "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.snow.css";
+import styles from "./Editor.module.css";
 import QuillCursors from "quill-cursors";
 
 Quill.register("modules/cursors", QuillCursors);
@@ -40,13 +41,18 @@ export default function Editor({
   }, [provider, quill]);
 
   return (
-    <ReactQuill
-      ref={quill}
-      className={styles.editor}
-      theme="snow"
-      value={value}
-      onChange={setValue}
-      modules={{ cursors: true }}
-    />
+    <div className={styles.editor}>
+      <h1>
+        Room: <code>{room}</code>
+      </h1>
+      <ReactQuill
+        ref={quill}
+        theme="snow"
+        className={styles.quill}
+        value={value}
+        onChange={setValue}
+        modules={{ cursors: true }}
+      />
+    </div>
   );
 }

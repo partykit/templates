@@ -30,16 +30,18 @@ export default function Lobby({
 
   return (
     <div className={styles.sidebar}>
-      <h3>Rooms</h3>
-      <p>Current room: {currentRoom}</p>
+      <h3>All Rooms</h3>
       <ul>
-        {Object.entries(rooms).map(([room, count]) => (
-          <li key={room}>
-            <button onClick={() => setCurrentRoom(room)}>
-              {room}: {count}
-            </button>
-          </li>
-        ))}
+        {Object.entries(rooms).map(([room, count]) => {
+          const isCurrent = room === currentRoom;
+          return (
+            <li key={room}>
+              <button onClick={() => setCurrentRoom(room)} disabled={isCurrent}>
+                {room} ({count})
+              </button>
+            </li>
+          );
+        })}
       </ul>
       <button onClick={() => setCurrentRoom(randomRoom)}>New Room</button>
     </div>

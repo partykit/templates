@@ -1,8 +1,23 @@
 .sidebar {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  width: 10rem;
-  border: 1px solid var(--foreground);
+  flex-grow: 0;
+  width: 12rem;
   padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 1rem;
+}
+
+.sidebar > h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sidebar > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }

@@ -1,0 +1,8 @@
+.editor {
+  flex-grow: 1;
+  min-width: 16rem;
+}
+
+.quill {
+  width: 100%;
+}
