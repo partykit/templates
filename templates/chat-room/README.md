@@ -13,7 +13,7 @@ It's built with client-side React and a PartyKit server, and it's a good startin
 
 Refer to our docs for more information: https://github.com/partykit/partykit/blob/main/README.md. For more help, reach out to us on [Discord](https://discord.gg/g5uqHQJc3z), [GitHub](https://github.com/partykit/partykit), or [X/Twitter](https://twitter.com/partykit_io).
 
-![image](/assets/chat-room.png)
+![image](assets/chat-room.png)
 
 ## How it works
 
@@ -167,7 +167,7 @@ You don't have to use JSON to send messages back and forth. You can send any str
 
 Let's look at an overview of the flow of data:
 
-![image](/assets/chat-room-flow.png)
+![image](assets/chat-room-flow.png)
 
 We'll build out this architecture in the following sections.
 
