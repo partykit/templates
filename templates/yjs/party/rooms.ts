@@ -1,11 +1,11 @@
 import type * as Party from "partykit/server";
 
-export const SINGLETON_ROOM_ID = "index";
 export interface Rooms {
   [key: string]: number;
 }
+export const SINGLETON_ROOM_ID = "index";
 
-export default class RoomsServer implements Party.Server {
+export default class OccupancyServer implements Party.Server {
   // Track room occupancy
   rooms: Rooms;
 
@@ -18,6 +18,12 @@ export default class RoomsServer implements Party.Server {
   }
 
   async onRequest(req: Party.Request) {
+    if (req.method === "GET") {
+      return new Response(
+        `Hi! This is party '${this.room.name}' and room '${this.room.id}'!`
+      );
+    }
+
     if (req.method === "POST") {
       const { room, count }: { room: string; count: number } = await req.json();
       this.rooms[room] = count;
@@ -25,6 +31,7 @@ export default class RoomsServer implements Party.Server {
       return Response.json({ ok: true });
     }
 
+    // Always return a Response
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 }

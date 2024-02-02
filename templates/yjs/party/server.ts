@@ -3,7 +3,7 @@ import { onConnect, type YPartyKitOptions } from "y-partykit";
 import type { Doc } from "yjs";
 import { SINGLETON_ROOM_ID } from "./rooms";
 
-export default class MosaicServer implements Party.Server {
+export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {};
   constructor(public room: Party.Room) {}
 
@@ -31,7 +31,9 @@ export default class MosaicServer implements Party.Server {
   }
 
   async updateCount() {
+    // Count the number of live connections
     const count = [...this.room.getConnections()].length;
+    // Send the count to the 'rooms' party using HTTP POST
     await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
       method: "POST",
       headers: { "Content-Type": "application/json" },

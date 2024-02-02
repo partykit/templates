@@ -139,4 +139,272 @@ From there, we use `provider` to bind Quill to Yjs. This is not a PartyKit-speci
 
 ### Setting up the PartyKit server for Yjs
 
-We've seen how PartyKit supports Yjs on the client side. How about the server?
+We've seen how PartyKit supports Yjs on the client side. How about the server? There's first-class support there too.
+
+Here is a minimal version of `party/server.ts`:
+
+```typescript
+import type * as Party from "partykit/server";
+import { onConnect } from "y-partykit";
+
+export default class EditorServer implements Party.Server {
+  constructor(public room: Party.Room) {}
+
+  async onConnect(conn: Party.Connection) {
+    return onConnect(conn, this.room);
+  }
+}
+```
+
+That's it! `onConnect` is a special method expected by `Party.Server` and it's called whenever a new client connects to the server. We hand off the connection to an identically named function from `y-partykit` which handles Yjs for us.
+
+So that's all you need for a PartyKit-hosted Yjs back-end.
+
+> [!INFO]
+> When you look at the server code, you'll see a little more in `onConnect`. This is a demo of how to set up a server-side callback for Yjs document changes. We're not using it in this application but it's handy to know about.
+
+### Adding a room switcher with occupancy count
+
+PartyKit is natively multi-room. Each collaborative text editor is an independent "room" and you can create as many as you like.
+
+But what if you want the user to be able to switch between rooms?
+
+How do you show the real-time occupancy count of each room, without having to connect?
+
+This is a common pattern in multiplayer applications. So let's dig in.
+
+Look at `app/components/Lobby.tsx` which displays the room switcher on the left of the app:
+
+```typescript
+// ... (other imports)
+import usePartySocket from "partysocket/react";
+import { SINGLETON_ROOM_ID, type Rooms } from "../../party/rooms";
+
+export default function Lobby({
+  currentRoom,
+  setCurrentRoom,
+}: {
+  currentRoom: string;
+  setCurrentRoom: (room: string) => void;
+}) {
+  const [rooms, setRooms] = useState<Rooms>({});
+
+  usePartySocket({
+    // host: props.host, -- defaults to window.location.host if not set
+    party: "rooms",
+    room: SINGLETON_ROOM_ID,
+    onMessage(evt) {
+      const data = JSON.parse(evt.data);
+      if (data.type === "rooms") {
+        setRooms(data.rooms as Rooms);
+      }
+    },
+  });
+
+  return (
+    /* Return JSX for a clickable room switcher */
+  );
+}
+```
+
+What we have here is a standard React component that uses the `usePartySocket` hook from the [PartySocket Client API](https://docs.partykit.io/reference/partysocket-api).
+
+It connects to a _different_ party, this one called `rooms`. It always connects to the same room: `SINGLETON_ROOM_ID`.
+
+`rooms` is an occupancy tracker across all rooms used by the server. (We'll look at how to set it up in the next chapter.)
+
+All `usePartySocket` does is connect, using a WebSocket, to the back-end party called `rooms`, and it listens for messages.
+
+When it receives a JSON message that looks like:
+
+```json
+{
+  "type": "rooms",
+  "rooms": {
+    "default": 1,
+    "room1": 2,
+    "room2": 3
+  } // i.e. type Rooms
+}
+```
+
+...then it stores the names of their rooms and their real-time occupancy count in the component's state.
+
+Let's look at the back-end to see where this comes from.
+
+### Setting up the `rooms` party
+
+We're using PartyKit's ability to run [multiple parties in the same project](https://docs.partykit.io/guides/using-multiple-parties-per-project/).
+
+In `partykit.json`:
+
+```jsonc
+{
+  "name": "yjs-editor", // project name
+  "main": "party/server.ts", // main Yjs server code for the editor
+  "parties": {
+    "rooms": "party/rooms.ts", // extra parties! This is the occupancy tracker
+  },
+  // more here
+}
+```
+
+Now when we run `npx partykit dev` then both parties will run. When we run `npx partykit deploy` then both parties will deploy to the same project (which is named `yjs-editor`).
+
+Type `npm run dev` or `npx partykit dev` now.
+
+Now visit [127.0.0.1:1999/parties/rooms/test-room-id](http://127.0.0.1:1999/parties/rooms/test-room-id) in your browser.
+
+You will see this text:
+
+```
+Hi! This is party 'rooms' and room 'test-room-id'!
+```
+
+This comes from the `onRequest` method in `party/rooms.ts`. `onRequest` is a special method for `Party.Server` and it's called for HTTP requests. Here it is:
+
+```typescript
+async onRequest(req: Party.Request) {
+  if (req.method === "GET") {
+    return new Response(
+      `Hi! This is party '${this.room.name}' and room '${this.room.id}'!`
+    );
+  }
+
+  // Always return a Response
+  return Response.json({ error: "Method not allowed" }, { status: 405 });
+}
+```
+
+We'll be using `onRequest` in the next section.
+
+### Tracking occupancy
+
+Let's build out the occupancy tracker, then figure out how to send it to the client later.
+
+#### Storing occupancy data
+
+The `rooms` party only uses a single room. To make that clear, we'll make a note of the single room name in the const `SINGLETON_ROOM_ID`. (This const is imported by the client component so it knows what room to connect to.)
+
+PartyKit server instances are stateful, so we can store data in the server instance and it will persist between requests.
+
+Let's just keep it in memory for this demo.
+
+```typescript
+export const SINGLETON_ROOM_ID = "index";
+
+export default class OccupancyServer implements Party.Server {
+  // Track room occupancy
+  rooms: Rooms;
+
+  constructor(public room: Party.Room) {
+    this.rooms = {};
+  }
+
+  /* everything else */
+}
+```
+
+Ok that's the occupancy data stored, when we receive it.
+
+> [!TIP]
+> PartyKit servers are stateful but short-running. If you need to store data for longer, as you would in production, there is first-class support for persisting small values. See: [Persisting state into storage](https://docs.partykit.io/guides/persisting-state-into-storage/)
+
+#### Receiving and broadcasting occupancy data
+
+Again in `party/rooms.ts`:
+
+```typescript
+  async onRequest(req: Party.Request) {
+    // ...
+
+    if (req.method === "POST") {
+      const { room, count }: { room: string; count: number } = await req.json();
+      this.rooms[room] = count;
+      this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
+      return Response.json({ ok: true });
+    }
+
+    // ...
+  }
+```
+
+Parties can handle connections by WebSocket and by HTTP. A connection to a party server can be made by a client _or another party in the same project._
+
+Here's we're doing this by handling an HTTP POST:
+
+- The `rooms` party receives a POST with a JSON body that looks like `{ room: "room1", count: 3 }`.
+- It stores the occupancy count in `this.rooms`...
+- ...and then broadcasts the new occupancy data to all connected clients, using `this.room.broadcast(...)`.
+
+The client code in `app/components/Lobby.tsx` listens for this broadcast and updates the UI. We've already seen that.
+
+#### Updating occupancy data
+
+How is occupancy data sent to the `rooms` party?
+
+Let's jump back to `party/server.ts` and look at just the relevant lines:
+
+```typescript
+export default class EditorServer implements Party.Server {
+  // ...
+
+  async onConnect(conn: Party.Connection) {
+    await this.updateCount(); // <- OCCUPANCY COUNT CHANGED!
+    return onConnect(conn, this.room, this.getOpts());
+  }
+
+  async onClose(_: Party.Connection) {
+    await this.updateCount(); // <- OCCUPANCY COUNT CHANGED!
+  }
+
+  async updateCount() {
+    // Count the number of live connections
+    const count = [...this.room.getConnections()].length;
+    // Send the count to the 'rooms' party using HTTP POST
+    await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room: this.room.id, count }),
+    });
+  }
+}
+```
+
+What's going on?
+
+- Whenever a client WebSocket connects (special method `onConnect`) or closes (special method `onClose`), the server calls `updateCount`.
+- `updateCount` counts the number of live connections to the room. `this.room.getConnections()` is an iterable of all connections to the current room. We just want to the length.
+- It then gets the `rooms` party in the current project, and the singleton room, using the _context_ provides by PartyKit: `this.room.context.parties.rooms.get(SINGLETON_ROOM_ID)`.
+- The party object exposes a `fetch` method, which is a wrapper around the standard `fetch` API. So it sends a POST request to the `rooms` party with the occupancy count.
+
+What happens then, we've already seen:
+
+- `rooms` receives the occupancy count
+- and broadcasts to all of _its_ connected clients.
+- Therefore all connected clients can see the real-time occupancy count of all rooms.
+
+**We're done!** We have real-time occupancy count across all rooms, and a room switcher.
+
+> [!TIP]
+> You can use `fetch(...)` to connect to a party in the same project using HTTP, or `socket()` to listen for WebSocket messages. The receiving party will treat this connection just like any other client.
+
+> [!TIP]
+> To handle HTTP requests from the client, `onRequest` also has to return CORS headers. This isn't shown in this demo.
+
+## Summary
+
+In this template we've shown two common PartyKit patterns:
+
+- Client-side and server-side Yjs support
+- Real-time occupancy count across all rooms, using multiple parties in a project
+
+## What's next?
+
+Yjs is a powerful framework. It's used for all kinds of shared data, not just text.
+
+For example the [PartyCore multiplayer drum machine demo](https://partycore.labs.partykit.dev) ([code on GitHub](https://github.com/partykit/sketch-sequencer)) uses shared Yjs maps to sync the state of multiple tracks of a step sequencer. What could you build with Yjs?
+
+Likewise, having multiple parties in the same project isn't just for occupancy count. You could separate concerns in a complex app, having separate parties for presence, program of long-running processes, and chat, for example.
+
+Or, in an AI chatroom app, use a single `usage` party to aggregate and store usage statistics across all rooms for display on a central dashboard; see the [AI chatroom demo](https://github.com/partykit/sketch-ai-chat-demo) and search for "Usage" in the README.
