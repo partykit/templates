@@ -38,7 +38,7 @@ export default function Editor({
     return () => {
       binding.destroy();
     };
-  }, [provider, quill]);
+  }, [userColor, provider, quill]);
 
   return (
     <div className={styles.editor}>
