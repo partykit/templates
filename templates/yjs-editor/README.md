@@ -13,6 +13,8 @@ It's built with client-side React and a PartyKit server, and it's a good startin
 
 Refer to our docs for more information: https://github.com/partykit/partykit/blob/main/README.md. For more help, reach out to us on [Discord](https://discord.gg/g5uqHQJc3z), [GitHub](https://github.com/partykit/partykit), or [X/Twitter](https://twitter.com/partykit_io).
 
+![image](assets/yjs-editor.png)
+
 ## How it works
 
 ### What we we looking at?
@@ -400,6 +402,13 @@ In this template we've shown two common PartyKit patterns:
 - Real-time occupancy count across all rooms, using multiple parties in a project
 
 ## What's next?
+
+Some basic improvements would be:
+
+- Allow users to decide their own room name instead of a random string, in `app/components/Lobby.tsx`.
+- In `app/client.tsx`, allow the user to auth (with a username and password or any other system) and pass the user object into `app/components/Editor.tsx` instead of just a randomly chosen color. The editor could display the user's name.
+
+Then there are possibilities beyond this multi-room collaborative editor...
 
 Yjs is a powerful framework. It's used for all kinds of shared data, not just text.
 
