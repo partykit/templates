@@ -1,6 +1,11 @@
 import styles from "./ChatRoom.module.css";
 import { useState } from "react";
-import { createMessage, type Message, type User } from "../../party/shared";
+import {
+  createMessage,
+  type Message,
+  type User,
+  type WSMessage,
+} from "../../party/shared";
 import AddMessageForm from "./AddMessageForm";
 import MessageList from "./MessageList";
 import usePartySocket from "partysocket/react";
@@ -28,7 +33,9 @@ function getRandomUser(): User {
 
 // in production, we'd get the user from the server
 // but for now, we'll just generate a random name
-const user = getRandomUser();
+const user =
+  JSON.parse(sessionStorage.getItem("user") || "null") || getRandomUser();
+sessionStorage.setItem("user", JSON.stringify(user));
 
 export default function ChatRoom(props: { roomName: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,11 +59,15 @@ export default function ChatRoom(props: { roomName: string }) {
     //party: "main", -- defaults to "main"
     room: props.roomName,
     onMessage(evt) {
-      const data = JSON.parse(evt.data);
+      const data = JSON.parse(evt.data) as WSMessage;
       if (data.type === "history") {
         setMessages(data.messages);
       } else if (data.type === "update") {
         setMessages((prevMessages) => handleUpdate(prevMessages, data.message));
+      } else if (data.type === "delete") {
+        setMessages((prevMessages) =>
+          prevMessages.filter((m) => m.id !== data.id)
+        );
       }
     },
   });

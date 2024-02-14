@@ -1,10 +1,38 @@
 import type * as Party from "partykit/server";
 import { Ai } from "partykit-ai";
-import { type Message, createMessage } from "./shared";
+import { type Message, createMessage, type WSMessage } from "./shared";
 import { getChatCompletionResponse, type OpenAIMessage } from "./openai";
 import { EventSourceParserStream } from "eventsource-parser/stream";
 
 const AI_USER = { name: "AI" };
+
+async function shouldReply(message: string): Promise<boolean> {
+  // for a given message, let's ask OpenAI whether we should reply
+
+  const prompt = [
+    {
+      role: "system",
+      content: `
+You are a helpful AI assistant that determines whether a message is a question to the Ai assistant. 
+Your response should be a single YES or NO.`,
+    },
+  ];
+  const messages = [
+    ...prompt,
+    { role: "user", content: message },
+  ] as OpenAIMessage[];
+
+  let response = "";
+
+  await getChatCompletionResponse(messages, (token) => {
+    response += token;
+  });
+
+  if (response.includes("YES")) {
+    return true;
+  }
+  return false;
+}
 
 export default class ChatServer implements Party.Server {
   messages: Message[] = [];
@@ -14,10 +42,18 @@ export default class ChatServer implements Party.Server {
     this.ai = new Ai(room.context.ai);
   }
 
+  // a typesafe wrapper around sending a message
+  send(socket: Party.Connection, msg: WSMessage) {
+    socket.send(JSON.stringify(msg));
+  }
+
+  // a typesafe wrapper around broadcasting a message
+  broadcast(msg: WSMessage, exclude: string[] = []) {
+    this.room.broadcast(JSON.stringify(msg), exclude);
+  }
+
   onConnect(connection: Party.Connection) {
-    connection.send(
-      JSON.stringify({ type: "history", messages: this.messages })
-    );
+    this.send(connection, { type: "history", messages: this.messages });
   }
 
   async onMessage(messageString: string, connection: Party.Connection) {
@@ -28,8 +64,11 @@ export default class ChatServer implements Party.Server {
       // Update the server's state, which is the source of truth
       this.messages.push(msg.message);
       // Send the new message to all clients
-      this.room.broadcast(
-        JSON.stringify({ type: "update", message: msg.message }),
+      this.broadcast(
+        {
+          type: "update",
+          message: msg.message,
+        },
         [connection.id]
       );
 
@@ -51,12 +90,25 @@ export default class ChatServer implements Party.Server {
     });
     const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
     this.messages.push(aiMsg);
+    // this.broadcast(
+    //  { type: "update", message: aiMsg }
+    // );
+
+    const shouldTheAiReply = await shouldReply(
+      messages[messages.length - 1].content as string
+    );
+
+    if (!shouldTheAiReply) {
+      this.messages = this.messages.filter((msg) => msg.id !== aiMsg.id);
+      // this.broadcast({ type: "delete", id: aiMsg.id });
+      return;
+    }
 
     let text = "";
     const usage = await getChatCompletionResponse(messages, (token) => {
       text += token;
       aiMsg.body = text;
-      this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
+      this.broadcast({ type: "update", message: aiMsg });
     });
     console.log("OpenAI usage", usage);
   }
@@ -66,7 +118,7 @@ export default class ChatServer implements Party.Server {
     const messages = this.messages.map((msg) => {
       return { role: msg.role, content: msg.body };
     });
-    const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
+    const aiMsg = createMessage(AI_USER, "...", "assistant");
     this.messages.push(aiMsg);
 
     // 2. Run the AI
@@ -93,7 +145,7 @@ export default class ChatServer implements Party.Server {
       const decoded = JSON.parse(part.data);
       response += decoded.response;
       aiMsg.body = response;
-      this.room.broadcast(JSON.stringify({ type: "update", message: aiMsg }));
+      this.broadcast({ type: "update", message: aiMsg });
     }
   }
 }

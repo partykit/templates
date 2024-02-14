@@ -21,3 +21,17 @@ export function createMessage(
     role: role || "user",
   };
 }
+
+export type WSMessage =
+  | {
+      type: "update";
+      message: Message;
+    }
+  | {
+      type: "history";
+      messages: Message[];
+    }
+  | {
+      type: "delete";
+      id: string;
+    };
