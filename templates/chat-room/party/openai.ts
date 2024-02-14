@@ -10,11 +10,12 @@ export async function getChatCompletionResponse(
   messages: OpenAIMessage[],
   onTokenCallback: (token: string) => void
 ) {
-  if (!process.env.OPENAI_API_ORGANIZATION) {
-    console.info(
-      "No OPENAI_API_ORGANIZATION set, usage will count against the default key owner"
-    );
-  }
+  // // If no organization is set, usage will count against the default key owner
+  // if (!process.env.OPENAI_API_ORGANIZATION) {
+  //   console.info(
+  //     "No OPENAI_API_ORGANIZATION set, usage will count against the default key owner"
+  //   );
+  // }
 
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -26,7 +27,7 @@ export async function getChatCompletionResponse(
       role: "system",
       content:
         "You are a helpful AI assistant. Your responses are always accurate and extremely brief.",
-    } as OpenAIMessage,
+    } satisfies OpenAIMessage,
     ...messages,
   ];
 

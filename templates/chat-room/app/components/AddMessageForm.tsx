@@ -1,37 +1,31 @@
 import styles from "./AddMessageForm.module.css";
-import { useState } from "react";
-import type { Message, User } from "../../party/shared";
-import { createMessage } from "../../party/shared";
+import { useRef } from "react";
 
 export default function AddMessageForm(props: {
-  addMessage: (message: Message) => void;
-  user: User | null;
+  onSubmit: (message: string) => void;
 }) {
-  const [message, setMessage] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const message = inputRef.current!.value.trim();
     if (!message) return;
-    if (!props.user) return;
-    props.addMessage(createMessage(props.user, message));
-    setMessage("");
+    props.onSubmit(message);
+    inputRef.current!.value = "";
   };
-
-  const disabled = !props.user;
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <input
+        ref={inputRef}
         type="text"
         name="message"
+        defaultValue=""
         placeholder="Your message..."
-        value={message}
         className={styles.input}
-        onChange={(e) => setMessage(e.target.value)}
         autoFocus
-        disabled={disabled}
       />
-      <button className={styles.button} type="submit" disabled={disabled}>
+      <button className={styles.button} type="submit">
         Send
       </button>
     </form>

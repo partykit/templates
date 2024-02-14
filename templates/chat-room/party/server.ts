@@ -11,7 +11,6 @@ export default class ChatServer implements Party.Server {
   ai: Ai;
 
   constructor(public room: Party.Room) {
-    this.messages = [];
     this.ai = new Ai(room.context.ai);
   }
 
@@ -65,7 +64,7 @@ export default class ChatServer implements Party.Server {
   async replyWithLlama() {
     // 1. Setup
     const messages = this.messages.map((msg) => {
-      return { role: msg.role, content: msg.body } as Message; //as OpenAIMessage;
+      return { role: msg.role, content: msg.body };
     });
     const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
     this.messages.push(aiMsg);
@@ -76,11 +75,11 @@ export default class ChatServer implements Party.Server {
         role: "system",
         content:
           "You are a helpful AI assistant. Your responses are always accurate and extremely brief.",
-      } as any, //as OpenAIMessage,
+      },
       ...messages,
     ];
     const stream = await this.ai.run("@cf/meta/llama-2-7b-chat-int8", {
-      messages: prompt as any,
+      messages: prompt,
       stream: true,
     });
     const eventStream = stream
