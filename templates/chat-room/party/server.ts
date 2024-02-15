@@ -44,7 +44,8 @@ export default class ChatServer implements Party.Server {
         [connection.id]
       );
 
-      if (!(await this.shouldReply())) return;
+      // Check if the AI should reply
+      //if (!(await this.shouldReply())) return;
 
       // If you don't have an OpenAI key, comment out the next line and uncomment replyWithLlama
       await this.replyWithOpenAI();
@@ -111,11 +112,13 @@ export default class ChatServer implements Party.Server {
   }
 
   async shouldReply() {
+    // 1. Create a transcript of the last 5 messages
     const transcript = this.messages
       .slice(-5)
       .map((msg) => `${msg.role === "assistant" ? "AI" : "User"}: ${msg.body}`)
       .join("\n");
 
+    // 2. Create a prompt that asks the AI whether it should INTERJECT or remain QUIET
     const messages = [
       {
         role: "system",
@@ -149,14 +152,15 @@ export default class ChatServer implements Party.Server {
 
     //console.log("shouldReply messages", messages);
 
-    // Use Mistral to choose whether to reply. If the response includes "INTERJECT", escalate to the standard model.
-    const response = await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
+    // 3. Use Mistral to decide whether to reply.
+    // If the response includes "INTERJECT", we'll escalate to the conversational model
+    const run = await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
       messages,
       stream: false,
     });
 
-    console.log("shouldReply response", response);
+    console.log("shouldReply response", run);
 
-    return response.response.includes("INTERJECT");
+    return run.response.includes("INTERJECT");
   }
 }

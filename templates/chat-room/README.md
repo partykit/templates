@@ -325,6 +325,52 @@ This OpenAI API wrapper is similar to the previous example: it receives a stream
 > [!TIP]
 > You'll also see in this function how to calculate OpenAI token usage, which we're not making use of here but is often important to track.
 
+### Adding AI discrimination with multiple models
+
+Considering the user experience and also the cost of AI usage:
+
+- we don't want the AI to reply every time. It's multi-user chat! The humans should be able to have a conversation without an AI response to every message.
+- the best conversational models are expensive. Can we use a cheaper, local model to decide whether to reply, then escalate only if necessary?
+
+To demonstrate this, we've added a method `shouldReply` to `ChatServer`.
+
+In `onMessage`, enable discrimination:
+
+```typescript
+// Check if the AI should reply
+if (!(await this.shouldReply())) return; // <- uncomment this line
+```
+
+The structure for `shouldReply` is:
+
+```typescript
+async shouldReply() {
+  // 1. Create a transcript of the last 5 messages
+  // const transcript = ...
+
+  // 2. Create a prompt that asks the AI whether it should INTERJECT or remain QUIET
+  // const messages = [ ... ]
+
+  // 3. Use Mistral to decide whether to reply.
+  // If the response includes "INTERJECT", we'll escalate to the conversational model
+  const run = await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
+    messages,
+    stream: false,
+  });
+
+  return run.response.includes("INTERJECT");
+}
+```
+
+Try it!
+
+![gif](assets/ai-joke.gif)
+
+Here we're using a smaller model to decide whether to escalate to a larger model. When you can call models as easily as a function call, it's easy to build complex logic like this -- and it leads to better experiences for the user.
+
+> [!TIP]
+> Read the code in `party/server.ts` to see how the prompt is constructed in `shouldReply`. We want the AI to be able to use its judgement, based on parsing the intent from the conversation transcript, but also response reliably.
+
 ## Deploying the project
 
 So far we've been running this project locally. Let's deploy it to the PartyKit platform.
