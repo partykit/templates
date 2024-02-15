@@ -150,16 +150,12 @@ export default class ChatServer implements Party.Server {
       },
     ];
 
-    //console.log("shouldReply messages", messages);
-
     // 3. Use Mistral to decide whether to reply.
     // If the response includes "INTERJECT", we'll escalate to the conversational model
-    const run = await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
+    const run = (await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
       messages,
       stream: false,
-    });
-
-    console.log("shouldReply response", run);
+    })) as { response: string };
 
     return run.response.includes("INTERJECT");
   }
