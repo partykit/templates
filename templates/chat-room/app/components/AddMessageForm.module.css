@@ -1,0 +1,33 @@
+.form {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input {
+  flex-grow: 1;
+  border: 1px solid rgb(214, 211, 209);
+  padding: 0.5rem;
+}
+
+.input:disabled {
+  background-color: rgb(245, 245, 244);
+  cursor: not-allowed;
+}
+
+.button {
+  /* grow-0 border border-stone-300 px-4 py-2 rounded disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed */
+  flex-grow: 0;
+  border: 1px solid rgb(214, 211, 209);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.button:disabled {
+  background-color: rgb(245, 245, 244);
+  color: rgb(214, 211, 209);
+  cursor: not-allowed;
+}

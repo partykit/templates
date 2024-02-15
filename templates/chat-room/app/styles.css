@@ -1,0 +1,58 @@
+/* 
+  We've already included normalize.css. 
+
+  But we'd like a modern looking boilerplate. 
+  Clean type, sans-serif, and a nice color palette. 
+  
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: sans-serif;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+#app {
+  width: 100%;
+  max-width: 56rem;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 1rem;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: space-between;
+}
+
+#app > main {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 1.5rem;
+}
+
+#app > main > h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #3b82f6;
+}

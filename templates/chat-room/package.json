@@ -1,5 +1,5 @@
 {
-  "name": "partykit-react-starter",
+  "name": "chat-room",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -7,6 +7,10 @@
     "deploy": "partykit deploy"
   },
   "dependencies": {
+    "eventsource-parser": "^1.1.2",
+    "js-tiktoken": "^1.0.10",
+    "openai": "^4.28.0",
+    "partykit-ai": "^0.0.11",
     "partysocket": "^0.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
