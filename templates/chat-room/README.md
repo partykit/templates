@@ -1,4 +1,4 @@
-# 🎈 Template: chat-room
+# 🎈 $PROJECT_NAME
 
 Welcome to the party, pal!
 

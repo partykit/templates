@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "chat-room",
+  "name": "$PROJECT_NAME",
   "main": "party/server.ts",
-  "compatibilityDate": "2024-01-25",
+  "compatibilityDate": "$COMPATIBILITY_DATE",
   "ai": true,
   "serve": {
     // Serve this directory as static files from the root
