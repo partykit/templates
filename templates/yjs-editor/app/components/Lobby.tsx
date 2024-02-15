@@ -20,13 +20,9 @@ export default function Lobby({
       const data = JSON.parse(evt.data);
       if (data.type === "rooms") {
         setRooms(data.rooms as Rooms);
-        console.log("rooms", data);
       }
     },
   });
-
-  // just a random string of characters and numbers, len 6
-  const randomRoom = Math.random().toString(36).substring(2, 8);
 
   return (
     <div className={styles.sidebar}>
@@ -43,7 +39,16 @@ export default function Lobby({
           );
         })}
       </ul>
-      <button onClick={() => setCurrentRoom(randomRoom)}>New Room</button>
+      <button
+        onClick={() =>
+          setCurrentRoom(
+            // just a random string of characters and numbers, len 6
+            Math.random().toString(36).substring(2, 8)
+          )
+        }
+      >
+        New Room
+      </button>
     </div>
   );
 }

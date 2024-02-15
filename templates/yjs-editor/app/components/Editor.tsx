@@ -15,21 +15,18 @@ export default function Editor({
   room: string;
   userColor: string;
 }) {
-  const [value, setValue] = useState("");
-  const quill = useRef(null);
+  const [text, setText] = useState("");
+  const quill = useRef<ReactQuill>(null);
 
   const provider = useYProvider({
     room,
-    options: {},
   });
 
   // Create an editor-binding which
   // "binds" the quill editor to a Y.Text type.
   useEffect(() => {
-    if (!quill.current) return;
-    if (!provider) return;
     const ytext = provider.doc.getText("quill");
-    const editor = quill.current.getEditor();
+    const editor = quill.current!.getEditor();
     const binding = new QuillBinding(ytext, editor, provider.awareness);
     provider.awareness.setLocalStateField("user", {
       name: "Typing...",
@@ -49,8 +46,8 @@ export default function Editor({
         ref={quill}
         theme="snow"
         className={styles.quill}
-        value={value}
-        onChange={setValue}
+        value={text}
+        onChange={setText}
         modules={{ cursors: true }}
       />
     </div>
