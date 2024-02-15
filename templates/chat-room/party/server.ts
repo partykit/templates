@@ -6,34 +6,6 @@ import { EventSourceParserStream } from "eventsource-parser/stream";
 
 const AI_USER = { name: "AI" };
 
-async function shouldReply(message: string): Promise<boolean> {
-  // for a given message, let's ask OpenAI whether we should reply
-
-  const prompt = [
-    {
-      role: "system",
-      content: `
-You are a helpful AI assistant that determines whether a message is a question to the Ai assistant. 
-Your response should be a single YES or NO.`,
-    },
-  ];
-  const messages = [
-    ...prompt,
-    { role: "user", content: message },
-  ] as OpenAIMessage[];
-
-  let response = "";
-
-  await getChatCompletionResponse(messages, (token) => {
-    response += token;
-  });
-
-  if (response.includes("YES")) {
-    return true;
-  }
-  return false;
-}
-
 export default class ChatServer implements Party.Server {
   messages: Message[] = [];
   ai: Ai;
@@ -72,7 +44,9 @@ export default class ChatServer implements Party.Server {
         [connection.id]
       );
 
-      // Optionally use OpenAI
+      if (!(await this.shouldReply())) return;
+
+      // If you don't have an OpenAI key, comment out the next line and uncomment replyWithLlama
       await this.replyWithOpenAI();
       //await this.replyWithLlama();
     }
@@ -90,19 +64,6 @@ export default class ChatServer implements Party.Server {
     });
     const aiMsg = createMessage(AI_USER, "Thinking...", "assistant");
     this.messages.push(aiMsg);
-    // this.broadcast(
-    //  { type: "update", message: aiMsg }
-    // );
-
-    const shouldTheAiReply = await shouldReply(
-      messages[messages.length - 1].content as string
-    );
-
-    if (!shouldTheAiReply) {
-      this.messages = this.messages.filter((msg) => msg.id !== aiMsg.id);
-      // this.broadcast({ type: "delete", id: aiMsg.id });
-      return;
-    }
 
     let text = "";
     const usage = await getChatCompletionResponse(messages, (token) => {
@@ -147,5 +108,55 @@ export default class ChatServer implements Party.Server {
       aiMsg.body = response;
       this.broadcast({ type: "update", message: aiMsg });
     }
+  }
+
+  async shouldReply() {
+    const transcript = this.messages
+      .slice(-5)
+      .map((msg) => `${msg.role === "assistant" ? "AI" : "User"}: ${msg.body}`)
+      .join("\n");
+
+    const messages = [
+      {
+        role: "system",
+        // Rationale:
+        // - Differentiate between the AI answering here and the AI in the transcript
+        // - Specify this is a multi-party conversation so the AI doesn't reply every time
+        content:
+          "You are a software program able to understand intent in multi-party conversations. You will be given a sample conversation transcript between multiple users plus an AI, and asked a question.",
+      },
+      {
+        role: "user",
+        // Rationale:
+        // - Include the transcript in delimiters so it's isolated from the broader prompt
+        //   (which also uses a 'role: message' behind the scenes)
+        // - Include a number of references so that the AI can discriminate based on context
+        content:
+          "The conversation transcript is contained in backtick delimiters below: ```\n" +
+          transcript +
+          "\n```",
+      },
+      {
+        role: "user",
+        // Rationale:
+        // - "Helpful" AIs are biased towards replying every time, so be strict about limiting responses
+        // - Including reasoning introduces chain-of-thought, which makes the judgement more reliable
+        // - The judgement words are semantically meaningful, not just "yes" or "no"
+        content:
+          "Question: 'AI' should reply only when being addressed by name. Looking at the last message from 'User' in the transcript, should 'AI' interject this time? Respond in the following format:\n\nReasoning: (give very brief reasoning here)\nJudgement: INTERJECT|QUIET (choose one)",
+      },
+    ];
+
+    //console.log("shouldReply messages", messages);
+
+    // Use Mistral to choose whether to reply. If the response includes "INTERJECT", escalate to the standard model.
+    const response = await this.ai.run("@hf/thebloke/neural-chat-7b-v3-1-awq", {
+      messages,
+      stream: false,
+    });
+
+    console.log("shouldReply response", response);
+
+    return response.response.includes("INTERJECT");
   }
 }
