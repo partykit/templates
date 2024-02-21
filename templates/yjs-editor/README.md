@@ -2,7 +2,7 @@
 
 Welcome to the party, pal!
 
-This is a [Partykit](https://partykit.io) project, which lets you create real-time collaborative applications with minimal coding effort.
+This is a [PartyKit](https://partykit.io) project, which lets you create real-time collaborative applications with minimal coding effort.
 
 This is an end-to-end example of:
 
