@@ -1,0 +1,26 @@
+.editor {
+  flex-grow: 1;
+  min-width: 16rem;
+}
+
+.editor h1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 2rem;
+  margin-top: 0;
+}
+
+.editor h1 > code {
+  font-size: 1rem;
+  font-weight: normal;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid white;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+}
+
+.quill {
+  width: 100%;
+}

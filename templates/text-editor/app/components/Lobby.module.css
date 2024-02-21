@@ -1,0 +1,73 @@
+.sidebar {
+  flex-grow: 0;
+  width: 13rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 2rem;
+  padding-top: 0.25rem;
+}
+
+/* width: 13rem only on screens larger than small */
+@media (max-width: 678px) {
+  .sidebar {
+    width: 100%;
+  }
+}
+
+.sidebar > h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.sidebar > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.room {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.button {
+  padding: 0.75rem 1rem;
+  font-family: monospace;
+  font-size: 1rem;
+  border-radius: 9999px;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.button:hover {
+  background-color: rgb(255, 255, 255);
+}
+
+.button:disabled {
+  color: green;
+  background-color: white;
+}
+
+.room > .button {
+  width: 100%;
+}
+
+.room > .presence {
+  font-size: 0.85rem;
+}
+
+.count {
+  font-weight: 600;
+}
