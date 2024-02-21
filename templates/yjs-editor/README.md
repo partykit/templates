@@ -114,7 +114,7 @@ export default function Editor(/*...*/) {
 Most of the code has been removed so we can zoom out and see the structure.
 
 - [Quill](https://quilljs.com) is a popular rich text editor framework for the web. The library [ReactQuill](https://github.com/zenoamaro/react-quill) is a React wrapper for it. _We're using this to provide the text editor UI._
-- [Yjs](https://yjs.dev) is a popular shared datastructures framework based on CRDTs and particularly good for text. It allows many clients work to together on the same data, and resolves conflicts.
+- [Yjs](https://yjs.dev) is a popular shared datastructures framework based on CRDTs and particularly good for text. It allows many clients to work together on the same data, and resolves conflicts automatically.
 - The Yjs "Getting Started" docs show how to use Yjs with Quill [build a collaborative editor](https://docs.yjs.dev/getting-started/a-collaborative-editor). Those are the instructions we're following here.
 
 But! Note `useYProvider`:
