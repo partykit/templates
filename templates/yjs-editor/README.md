@@ -380,7 +380,7 @@ What's going on?
 
 - Whenever a client WebSocket connects (special method `onConnect`) or closes (special method `onClose`), the server calls `updateCount`.
 - `updateCount` counts the number of live connections to the room. `this.room.getConnections()` is an iterable of all connections to the current room. We just want to the length.
-- It then gets the `rooms` party in the current project, and the singleton room, using the _context_ provides by PartyKit: `this.room.context.parties.rooms.get(SINGLETON_ROOM_ID)`.
+- It then gets the `rooms` party in the current project, and the singleton room, using the _context_ provided by PartyKit: `this.room.context.parties.rooms.get(SINGLETON_ROOM_ID)`.
 - The party object exposes a `fetch` method, which is a wrapper around the standard `fetch` API. So it sends a POST request to the `rooms` party with the occupancy count.
 
 What happens then, we've already seen:
