@@ -31,15 +31,23 @@ export default function Lobby({
         {Object.entries(rooms).map(([room, count]) => {
           const isCurrent = room === currentRoom;
           return (
-            <li key={room}>
-              <button onClick={() => setCurrentRoom(room)} disabled={isCurrent}>
-                {room} ({count})
+            <li className={styles.room} key={room}>
+              <button
+                className={styles.button}
+                onClick={() => setCurrentRoom(room)}
+                disabled={isCurrent}
+              >
+                Room #{room}
               </button>
+              <span className={styles.presence}>
+                Present <span className={styles.count}>{count}</span>
+              </span>
             </li>
           );
         })}
       </ul>
       <button
+        className={styles.button}
         onClick={() =>
           setCurrentRoom(
             // just a random string of characters and numbers, len 6

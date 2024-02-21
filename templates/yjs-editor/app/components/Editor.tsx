@@ -40,7 +40,7 @@ export default function Editor({
   return (
     <div className={styles.editor}>
       <h1>
-        Room: <code>{room}</code>
+        Editor <code>Room #{room}</code>
       </h1>
       <ReactQuill
         ref={quill}

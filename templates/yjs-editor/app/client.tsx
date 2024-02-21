@@ -14,8 +14,8 @@ function App() {
   const userColor = useMemo(() => getRandomColor(), []);
   return (
     <main>
-      <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <Editor room={currentRoom} userColor={userColor} key={currentRoom} />
+      <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
     </main>
   );
 }
