@@ -313,7 +313,7 @@ export default class OccupancyServer implements Party.Server {
 Ok that's a place to store occupancy data.
 
 > [!TIP]
-> PartyKit servers are stateful but short-running. If you need to store data for longer, as you would in production, there is first-class support for persisting small values. See: [Persisting state into storage](https://docs.partykit.io/guides/persisting-state-into-storage/)
+> PartyKit servers are stateful but can shut down when there's no activity. If you need to store data for longer, as you would in production, there is first-class support for persisting small values. See: [Persisting state into storage](https://docs.partykit.io/guides/persisting-state-into-storage/)
 
 #### 2️⃣ Receiving and broadcasting occupancy data
 
