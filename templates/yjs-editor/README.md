@@ -1,4 +1,4 @@
-# 🎈 Template: yjs-text-editor
+# 🎈 Template: text-editor
 
 Welcome to the party, pal!
 
@@ -6,8 +6,8 @@ This is a [PartyKit](https://partykit.io) project, which lets you create real-ti
 
 This is an end-to-end example of:
 
-- a multiplayer chat room
-- with AI-generated replies using either OpenAI or Llama2.
+- a multiplayer text editor using Yjs
+- with multiple rooms showing real-time occupancy counts.
 
 It's built with client-side React and a PartyKit server, and it's a good starting point for building your own PartyKit project.
 
@@ -22,8 +22,8 @@ Refer to our docs for more information: https://github.com/partykit/partykit/blo
 Let's bring up the UI by installing this example and running the code:
 
 ```bash
-npm create partykit@latest my-yjs-project --template yjs-text-editor
-cd my-yjs-project
+npm create partykit@latest my-editor-project --template text-editor
+cd my-editor-project
 npm run dev
 # Open http://127.0.0.1:1999 in your browser
 ```
@@ -239,7 +239,7 @@ In `partykit.json`:
 
 ```jsonc
 {
-  "name": "yjs-editor", // project name
+  "name": "text-editor", // project name
   "main": "party/server.ts", // main Yjs server code for the editor
   "parties": {
     "rooms": "party/rooms.ts", // extra parties! This is the occupancy tracker
@@ -248,7 +248,7 @@ In `partykit.json`:
 }
 ```
 
-Now when we run `npx partykit dev` then both parties will run. When we run `npx partykit deploy` then both parties will deploy to the same project (which is named `yjs-editor`).
+Now when we run `npx partykit dev` then both parties will run. When we run `npx partykit deploy` then both parties will deploy to the same project (which is named `text-editor`).
 
 Type `npm run dev` or `npx partykit dev` now.
 
