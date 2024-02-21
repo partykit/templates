@@ -1,4 +1,4 @@
-# 🎈 Template: text-editor
+# 🎈 $PROJECT_NAME
 
 Welcome to the party, pal!
 
