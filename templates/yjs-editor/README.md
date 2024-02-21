@@ -22,9 +22,8 @@ Refer to our docs for more information: https://github.com/partykit/partykit/blo
 Let's bring up the UI by installing this example and running the code:
 
 ```bash
-npm create partykit@latest --template yjs-text-editor
-cd chat-room
-npm install
+npm create partykit@latest my-yjs-project --template yjs-text-editor
+cd my-yjs-project
 npm run dev
 # Open http://127.0.0.1:1999 in your browser
 ```
