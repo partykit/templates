@@ -31,16 +31,14 @@ npm run dev
 
 You'll see a simple, single page with two columns:
 
-1. **A list of "rooms" on the left.** The button labelled "default" is disabled because it's the current room. You can create new rooms.
+1. **A list of "rooms" on the left.** The button labelled "default" is highlighted because it's the current room. You can create new rooms.
 2. **A text editor on the right.** This is a multiplayer text editor. You can type in it, and you'll see other people's cursors and text as they type.
 
 The text editor syncs using the popular [Yjs](https://yjs.dev) shared editing framework. PartyKit has built-in support to run as a Yjs server.
 
 The text editor UI uses the [Quill framework](https://quilljs.com) and is running in a standard client-side React app. You can find the source in `app/` (the entrypoint is `app/client.tsx`) and the compiled code in `public/dist/`.
 
-As a standard React app, you could host it anywhere.
-
-It's just static files after all!
+As a standard React app, you could host it anywhere. It's just static files after all!
 
 For the purposes of this demo, and for convenience, we'll serve those static files using PartyKit itself. Let's see how that works.
 
@@ -54,7 +52,7 @@ For now, look at:
 
 - `partykit.json` -- the configuration file.
 
-In addition to running code in "room" instances, the PartyKit platform can also serve static assets. To enable this, there's a property in `partykit.json`:
+In addition to running code in "room" instances, the PartyKit platform can also serve static assets. To enable this, there's an optional `serve` property in `partykit.json`:
 
 ```jsonc
 {
@@ -114,7 +112,7 @@ export default function Editor(/*...*/) {
 }
 ```
 
-Most of the code has been removed so we can zoom in.
+Most of the code has been removed so we can zoom out and see the structure.
 
 - [Quill](https://quilljs.com) is a popular rich text editor framework for the web. The library [ReactQuill](https://github.com/zenoamaro/react-quill) is a React wrapper for it. _We're using this to provide the text editor UI._
 - [Yjs](https://yjs.dev) is a popular shared datastructures framework based on CRDTs and particularly good for text. It allows many clients work to together on the same data, and resolves conflicts.
@@ -122,28 +120,28 @@ Most of the code has been removed so we can zoom in.
 
 But! Note `useYProvider`:
 
-PartyKit is often used as a WebSocket server, and we roll our own protocol to communicate with connected clients, based on the specific needs of the app.
+PartyKit is often used as a WebSocket server, and in those cases we roll our own protocol to communicate with connected clients, based on the specific needs of the app.
 
-But Yjs has its own protocol for syncing data, and it's battle-tested and popular.
+But Yjs has its own protocol for syncing data. It's battle-tested and popular.
 
 **So PartyKit has first-class support for Yjs on both the client and server side.**
 
-A client would usually connect to a PartyKit server using the `usePartySocket` hook from the [PartySocket Client API](https://docs.partykit.io/reference/partysocket-api/).
+Usually, using WebSockets, a client would connect to a PartyKit server using the `usePartySocket` hook from the [PartySocket Client API](https://docs.partykit.io/reference/partysocket-api/).
 
 Instead the `useYProvider` hook is used to connect to the PartyKit server, and it automatically sets up everything that Yjs requires.
 
 This hook automatically creates an empty Yjs document for the room (you could pass one in if you wanted to), and it also sets up the Yjs awareness protocol, which is used to show other people's cursors and selections in the editor.
 
-From there, we use `provider` to bind Quill to Yjs. This is not a PartyKit-specific operation and you can find out more about it in the Yjs Getting Started guide linked above.
+From there, we use `provider` to bind Quill to Yjs. This is not a PartyKit-specific operation and you can find out more about it in the Yjs "Getting Started" guide linked above.
 
 > [!TIP]
-> The PartyKit docs have more about [Y-PartyKit](https://docs.partykit.io/reference/y-partykit-api/)
+> Check out the PartyKit docs for [the full Y-PartyKit API](https://docs.partykit.io/reference/y-partykit-api/).
 
 ### Setting up the PartyKit server for Yjs
 
 We've seen how PartyKit supports Yjs on the client side. How about the server? There's first-class support there too.
 
-Here is a minimal version of `party/server.ts`:
+Here is a minimal `party/server.ts` acting as a Yjs server:
 
 ```typescript
 import type * as Party from "partykit/server";
@@ -158,11 +156,11 @@ export default class EditorServer implements Party.Server {
 }
 ```
 
-That's it! `onConnect` is a special method expected by `Party.Server` and it's called whenever a new client connects to the server. We hand off the connection to an identically named function from `y-partykit` which handles Yjs for us.
+That's it! `onConnect` is a special method expected by `Party.Server` and it's called whenever a new client connects to the server. We hand off new connections to an identically named function from `y-partykit` which performs all the Yjs work for us.
 
 So that's all you need for a PartyKit-hosted Yjs back-end.
 
-> [!INFO]
+> [!NOTE]
 > When you look at the server code, you'll see a little more in `onConnect`. This is a demo of how to set up a server-side callback for Yjs document changes. We're not using it in this application but it's handy to know about.
 
 ### Adding a room switcher with occupancy count
@@ -171,7 +169,7 @@ PartyKit is natively multi-room. Each collaborative text editor is an independen
 
 But what if you want the user to be able to switch between rooms?
 
-How do you show the real-time occupancy count of each room, without having to connect?
+_How do you show the real-time occupancy count of each room, without having to connect to each?_
 
 This is a common pattern in multiplayer applications. So let's dig in.
 
@@ -211,22 +209,22 @@ export default function Lobby({
 
 What we have here is a standard React component that uses the `usePartySocket` hook from the [PartySocket Client API](https://docs.partykit.io/reference/partysocket-api).
 
-It connects to a _different_ party, this one called `rooms`. It always connects to the same room: `SINGLETON_ROOM_ID`.
+It connects to a _different_ party, this one called `rooms`. It always connects to the same room, regardless of the room used by the text editor: `SINGLETON_ROOM_ID`.
 
-`rooms` is an occupancy tracker across all rooms used by the server. (We'll look at how to set it up in the next chapter.)
+`rooms` is an occupancy tracker across all rooms used by the server. (We'll look at how to write it in the next section.)
 
 All `usePartySocket` does is connect, using a WebSocket, to the back-end party called `rooms`, and it listens for messages.
 
 When it receives a JSON message that looks like:
 
-```json
+```jsonc
 {
   "type": "rooms",
   "rooms": {
     "default": 1,
     "room1": 2,
-    "room2": 3
-  } // i.e. type Rooms
+    "room2": 3,
+  }, // i.e. type Rooms
 }
 ```
 
@@ -282,9 +280,15 @@ We'll be using `onRequest` in the next section.
 
 ### Tracking occupancy
 
-Let's build out the occupancy tracker, then figure out how to send it to the client later.
+Let's create that occupancy tracker.
 
-#### Storing occupancy data
+Here's the overall architecture of what we're going to build.
+
+![image](assets/architecture.png)
+
+We're building the `rooms` party in the lower right.
+
+#### 1️⃣ Storing occupancy data
 
 The `rooms` party only uses a single room. To make that clear, we'll make a note of the single room name in the const `SINGLETON_ROOM_ID`. (This const is imported by the client component so it knows what room to connect to.)
 
@@ -307,31 +311,31 @@ export default class OccupancyServer implements Party.Server {
 }
 ```
 
-Ok that's the occupancy data stored, when we receive it.
+Ok that's a place to store occupancy data.
 
 > [!TIP]
 > PartyKit servers are stateful but short-running. If you need to store data for longer, as you would in production, there is first-class support for persisting small values. See: [Persisting state into storage](https://docs.partykit.io/guides/persisting-state-into-storage/)
 
-#### Receiving and broadcasting occupancy data
+#### 2️⃣ Receiving and broadcasting occupancy data
 
 Again in `party/rooms.ts`:
 
 ```typescript
-  async onRequest(req: Party.Request) {
-    // ...
+async onRequest(req: Party.Request) {
+  // ...
 
-    if (req.method === "POST") {
-      const { room, count }: { room: string; count: number } = await req.json();
-      this.rooms[room] = count;
-      this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
-      return Response.json({ ok: true });
-    }
-
-    // ...
+  if (req.method === "POST") {
+    const { room, count }: { room: string; count: number } = await req.json();
+    this.rooms[room] = count;
+    this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
+    return Response.json({ ok: true });
   }
+
+  // ...
+}
 ```
 
-Parties can handle connections by WebSocket and by HTTP. A connection to a party server can be made by a client _or another party in the same project._
+Parties can handle connections both using WebSocket and by HTTP. A connection to a party server can be made by a client _or another party in the same project._
 
 Here's we're doing this by handling an HTTP POST:
 
@@ -392,11 +396,11 @@ What happens then, we've already seen:
 > You can use `fetch(...)` to connect to a party in the same project using HTTP, or `socket()` to listen for WebSocket messages. The receiving party will treat this connection just like any other client.
 
 > [!TIP]
-> To handle HTTP requests from the client, `onRequest` also has to return CORS headers. This isn't shown in this demo.
+> If we were handling HTTP requests from the client, rather than other parties, `onRequest` would also have to return CORS headers. We haven't needed it here, so CORS isn't in this demo, but you may need it.
 
 ## Summary
 
-In this template we've shown two common PartyKit patterns:
+In this template we've covered two common PartyKit patterns:
 
 - Client-side and server-side Yjs support
 - Real-time occupancy count across all rooms, using multiple parties in a project
@@ -408,12 +412,10 @@ Some basic improvements would be:
 - Allow users to decide their own room name instead of a random string, in `app/components/Lobby.tsx`.
 - In `app/client.tsx`, allow the user to auth (with a username and password or any other system) and pass the user object into `app/components/Editor.tsx` instead of just a randomly chosen color. The editor could display the user's name.
 
-Then there are possibilities beyond this multi-room collaborative editor...
-
-Yjs is a powerful framework. It's used for all kinds of shared data, not just text.
+Then there are possibilities beyond this multi-room collaborative editor... Yjs is a powerful framework. It's used for all kinds of shared data, not just text.
 
 For example the [PartyCore multiplayer drum machine demo](https://partycore.labs.partykit.dev) ([code on GitHub](https://github.com/partykit/sketch-sequencer)) uses shared Yjs maps to sync the state of multiple tracks of a step sequencer. What could you build with Yjs?
 
-Likewise, having multiple parties in the same project isn't just for occupancy count. You could separate concerns in a complex app, having separate parties for presence, program of long-running processes, and chat, for example.
+Likewise, having multiple parties in the same project is useful beyond tracking room occupancy. For example, multiple parties might be used to separate concerns in a complex app. Use separate parties for presence, tracking long-running processes, and chat, perhaps.
 
 Or, in an AI chatroom app, use a single `usage` party to aggregate and store usage statistics across all rooms for display on a central dashboard; see the [AI chatroom demo](https://github.com/partykit/sketch-ai-chat-demo) and search for "Usage" in the README.
