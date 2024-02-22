@@ -45,7 +45,7 @@ export default class ChatServer implements Party.Server {
       );
 
       // Check if the AI should reply
-      //if (!(await this.shouldReply())) return;
+      if (!(await this.shouldReply())) return;
 
       // If you don't have an OpenAI key, comment out the next line and uncomment replyWithLlama
       await this.replyWithOpenAI();

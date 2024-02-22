@@ -263,6 +263,9 @@ async onMessage(messageString: string, connection: Party.Connection) {
 
 `replyWithLlama` is a method we've added to `ChatServer`. It's not a special method, it's just a method we've added ourselves.
 
+> [!IMPORTANT]
+> When you run this code yourself, the AI won't reply to every single message. That's because of the line `await this.shouldReply()` in `onMessage` that we'll look at in a moment. Comment out that line if you'd like the AI to reply every time.
+
 The implementation has three sections, and we'll skip over most of the lines to highlight the important parts:
 
 ```typescript
@@ -334,14 +337,14 @@ Considering the user experience and also the cost of AI usage:
 
 To demonstrate this, we've added a method `shouldReply` to `ChatServer`.
 
-In `onMessage`, enable discrimination:
+In `onMessage`, here's where the disciminator is called:
 
 ```typescript
 // Check if the AI should reply
-if (!(await this.shouldReply())) return; // <- uncomment this line
+if (!(await this.shouldReply())) return;
 ```
 
-The structure for `shouldReply` is:
+The high-level structure of `shouldReply` is:
 
 ```typescript
 async shouldReply() {
