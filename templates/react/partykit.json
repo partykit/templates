@@ -1,10 +1,11 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "$PROJECT_NAME",
-  "main": "src/server.ts",
-  "compatibilityDate": "$COMPATIBILITY_DATE",
+  //"name": "$PROJECT_NAME",
+  "name": "react",
+  "main": "party/server.ts",
+  //"compatibilityDate": "$COMPATIBILITY_DATE",
   "serve": {
     "path": "public",
-    "build": "src/client.tsx"
+    "build": "app/client.tsx"
   }
 }
