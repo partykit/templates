@@ -23,7 +23,7 @@ export default class Server implements Party.Server {
     console.log(`connection ${sender.id} sent message: ${message}`);
     // we could use a more sophisticated protocol here, such as JSON
     // in the message data, but for simplicity we just use a string
-    if (message.trim() === "increment") {
+    if (message === "increment") {
       this.increment();
     }
   }

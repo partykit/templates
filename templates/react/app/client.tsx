@@ -1,15 +1,8 @@
 import "./styles.css";
-import usePartySocket from "partysocket/react";
 import { createRoot } from "react-dom/client";
 import Counter from "./components/Counter";
 
 function App() {
-  usePartySocket({
-    room: "example-room",
-    onMessage(evt) {
-      console.log("Received message:", evt.data);
-    },
-  });
   return (
     <main>
       <h1>🎈 Welcome to PartyKit!</h1>
@@ -38,7 +31,7 @@ function App() {
       <p>
         <i>This counter is multiplayer. Try it with multiple browser tabs.</i>
       </p>
-      <Counter initialCount={0} />
+      <Counter />
     </main>
   );
 }

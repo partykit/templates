@@ -2,8 +2,10 @@ import { useState } from "react";
 import PartySocket from "partysocket";
 import usePartySocket from "partysocket/react";
 
-// the route-level loader in routes/_index.tsx uses this to
-// get the initial count from the server
+// We're not using server-side rendering and initial props in this
+// example (our app is client-side only), so loadInitialCount is not
+// used. But if we were using SSR, we would use this function to load
+// the initial count, as returned by onRequest in `party/server.ts`.
 export async function loadInitialCount(host: string) {
   const initialCount = await PartySocket.fetch(
     {
@@ -18,7 +20,7 @@ export async function loadInitialCount(host: string) {
   return parseInt(initialCount) || 0;
 }
 
-export default function Counter({ initialCount }: { initialCount: number }) {
+export default function Counter() {
   const [count, setCount] = useState<number | null>(null);
 
   const socket = usePartySocket({
