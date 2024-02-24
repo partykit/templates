@@ -1,0 +1,6 @@
+{
+	"$schema": "https://www.partykit.io/schema.json",
+	"name": "partykit-test",
+	"main": "./src/party/server.ts",
+	"ai": true
+}
