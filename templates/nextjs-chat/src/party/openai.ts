@@ -19,7 +19,7 @@ export async function getChatCompletionResponse(
 
 	const openai = new OpenAI({
 		apiKey: process.env.OPENAI_API_KEY,
-		// organization: process.env.OPENAI_API_ORGANIZATION,
+		organization: process.env.OPENAI_API_ORGANIZATION,
 	});
 
 	const prompt = [

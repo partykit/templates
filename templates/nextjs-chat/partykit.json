@@ -1,6 +1,7 @@
 {
 	"$schema": "https://www.partykit.io/schema.json",
-	"name": "partykit-test",
+	"name": "$PROJECT_NAME",
 	"main": "./src/party/server.ts",
+	"compatibilityDate": "$COMPATIBILITY_DATE",
 	"ai": true
 }
