@@ -7,10 +7,10 @@
     "deploy": "partykit deploy"
   },
   "dependencies": {
-    "partysocket": "^0.0.25"
+    "partysocket": "^1.0.0"
   },
   "devDependencies": {
-    "partykit": "^0.0.90",
+    "partykit": "^0.0.96",
     "typescript": "^5.3.3"
   }
 }
