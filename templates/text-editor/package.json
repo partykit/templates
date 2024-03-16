@@ -7,19 +7,19 @@
     "deploy": "partykit deploy"
   },
   "dependencies": {
-    "partysocket": "^1.0.0",
+    "partysocket": "^1.0.1",
     "quill-cursors": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-quill": "^2.0.0",
-    "y-partykit": "^0.0.25",
+    "y-partykit": "^0.0.27",
     "y-quill": "^0.1.5",
-    "yjs": "^13.6.12"
+    "yjs": "^13.6.14"
   },
   "devDependencies": {
-    "@types/react": "^18.2.60",
-    "@types/react-dom": "^18.2.19",
-    "partykit": "^0.0.96",
-    "typescript": "^5.3.3"
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "partykit": "^0.0.100",
+    "typescript": "^5.4.2"
   }
 }
