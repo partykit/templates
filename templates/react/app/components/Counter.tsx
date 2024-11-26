@@ -35,7 +35,7 @@ export default function Counter() {
 
   const increment = () => {
     // optimistic local update
-    setCount((prev) => prev ?? 0 + 1);
+    setCount((prev) => (prev ?? 0) + 1);
     // send the update to the server
     socket.send("increment");
   };
